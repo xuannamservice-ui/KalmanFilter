@@ -8,7 +8,7 @@ Nghiên cứu khoa học chuyên sâu và mã nguồn thực nghiệm mô phỏn
 
 | GitHub Repository | QR Code Quét Bằng Thiết Bị Di Động |
 | :---: | :---: |
-| **[xuannamservice-ui/KalmanFilter](https://github.com/xuannamservice-ui/KalmanFilter)**<br>`https://github.com/xuannamservice-ui/KalmanFilter`<br><br>⚡ **Web Simulator 2D trực tiếp**: `http://100.83.187.16:8888/` | <img src="docs/github_qr.png" alt="GitHub Repository QR Code" width="180"/> |
+| **[xuannamservice-ui/KalmanFilter](https://github.com/xuannamservice-ui/KalmanFilter)**<br>`https://github.com/xuannamservice-ui/KalmanFilter` | <img src="docs/github_qr.png" alt="GitHub Repository QR Code" width="180"/> |
 
 ---
 
