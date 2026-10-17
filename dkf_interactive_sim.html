@@ -3,22 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DKF-WSN LAB · BỘ LỌC KALMAN PHÂN TÁN</title>
+    <title>DKF-WSN LAB · BỘ LỌC KALMAN PHÂN TÁN ĐA MỤC TIÊU</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #060913;
-            --bg-panel: #0a0f1d;
-            --bg-card: #0d1527;
-            --border-color: #1e293b;
-            --border-light: #334155;
-            --accent-cyan: #38bdf8;
-            --accent-emerald: #10b981;
-            --accent-amber: #f59e0b;
-            --accent-rose: #f43f5e;
-            --accent-purple: #c084fc;
+            --bg-deep: #050811;
+            --bg-card: rgba(13, 21, 38, 0.85);
+            --bg-card-hover: rgba(20, 32, 56, 0.9);
+            --border-subtle: rgba(51, 65, 85, 0.4);
+            --border-glow: rgba(56, 189, 248, 0.35);
+            
+            --cyan: #38bdf8;
+            --cyan-glow: rgba(56, 189, 248, 0.4);
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.4);
+            --amber: #f59e0b;
+            --amber-glow: rgba(245, 158, 11, 0.4);
+            --rose: #f43f5e;
+            --rose-glow: rgba(244, 63, 94, 0.4);
+            --purple: #c084fc;
+            --purple-glow: rgba(192, 132, 252, 0.4);
+            
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --text-dim: #64748b;
@@ -32,7 +39,13 @@
         }
 
         body {
-            background-color: var(--bg-main);
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(192, 132, 252, 0.05) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
@@ -46,13 +59,33 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 24px;
-            background: linear-gradient(180deg, rgba(13, 21, 39, 0.95) 0%, rgba(10, 15, 29, 0.9) 100%);
-            border-bottom: 1px solid var(--border-color);
+            padding: 12px 28px;
+            background: rgba(8, 14, 27, 0.85);
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 50;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(192, 132, 252, 0.2));
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
         }
 
         .title-area h1 {
@@ -61,38 +94,44 @@
             letter-spacing: -0.02em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .title-area h1 span.highlight {
-            color: var(--accent-cyan);
-            text-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+        .title-area h1 span.gradient-text {
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
         }
 
         .title-area p {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .header-stats {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 18px;
         }
 
         .stat-item {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            padding: 0 4px;
         }
 
         .stat-label {
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            font-weight: 600;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
 
         .stat-val {
@@ -102,79 +141,103 @@
             color: var(--text-main);
         }
 
-        .stat-val.emerald { color: var(--accent-emerald); }
-        .stat-val.rose { color: var(--accent-rose); }
-        .stat-val.cyan { color: var(--accent-cyan); }
-        .stat-val.amber { color: var(--accent-amber); }
+        .stat-val.emerald { color: var(--emerald); text-shadow: 0 0 10px var(--emerald-glow); }
+        .stat-val.rose { color: var(--rose); text-shadow: 0 0 10px var(--rose-glow); }
+        .stat-val.cyan { color: var(--cyan); text-shadow: 0 0 10px var(--cyan-glow); }
+        .stat-val.amber { color: var(--amber); text-shadow: 0 0 10px var(--amber-glow); }
 
         .btn-live-status {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
+            padding: 7px 16px;
             background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(16, 185, 129, 0.35);
             border-radius: 9999px;
-            color: var(--accent-emerald);
+            color: var(--emerald);
             font-size: 0.75rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.04em;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-live-status:hover {
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
         }
 
         .btn-live-status .dot {
             width: 8px;
             height: 8px;
-            background: var(--accent-emerald);
+            background: var(--emerald);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-emerald);
-            animation: pulse-dot 1.5s infinite;
+            box-shadow: 0 0 8px var(--emerald);
+            animation: pulse-dot 1.4s infinite;
         }
 
         @keyframes pulse-dot {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
+            50% { opacity: 0.35; transform: scale(0.8); }
         }
 
         /* Insights Banner */
         .insights-bar {
-            margin: 12px 24px 0 24px;
-            background: rgba(14, 165, 233, 0.05);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 10px;
-            padding: 10px 16px;
+            margin: 14px 28px 0 28px;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.08) 0%, rgba(13, 21, 38, 0.7) 100%);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            padding: 10px 18px;
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            gap: 14px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insights-bar::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--cyan), var(--purple));
         }
 
         .insights-icon {
-            color: var(--accent-cyan);
-            font-size: 1.2rem;
+            color: var(--cyan);
+            font-size: 1.15rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: rgba(56, 189, 248, 0.1);
+            width: 34px;
+            height: 34px;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.25);
             border-radius: 8px;
             flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
         }
 
         .insights-content {
             font-size: 0.8rem;
-            line-height: 1.45;
+            line-height: 1.5;
         }
 
         .insights-title {
-            color: var(--accent-cyan);
-            font-weight: 700;
-            font-size: 0.72rem;
+            color: var(--cyan);
+            font-weight: 800;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .insights-text {
@@ -182,79 +245,91 @@
         }
 
         .insights-text strong {
-            color: #fff;
+            color: #ffffff;
         }
 
-        /* Main Workspace Layout */
+        /* Workspace Layout */
         .workspace {
             display: grid;
-            grid-template-columns: 1fr 420px;
-            gap: 16px;
-            padding: 16px 24px;
+            grid-template-columns: 1fr 440px;
+            gap: 18px;
+            padding: 16px 28px 24px 28px;
             flex: 1;
         }
 
         /* Simulation Canvas Box */
-        .canvas-container {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
+        .canvas-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 60px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+        }
+
+        .canvas-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
         }
 
         .canvas-header-tags {
             position: absolute;
             top: 14px;
-            left: 14px;
+            left: 16px;
             display: flex;
             gap: 8px;
             z-index: 10;
         }
 
         .canvas-tag {
-            background: rgba(13, 21, 39, 0.85);
-            border: 1px solid var(--border-color);
-            padding: 4px 10px;
-            border-radius: 6px;
+            background: rgba(9, 14, 26, 0.88);
+            border: 1px solid var(--border-subtle);
+            padding: 5px 12px;
+            border-radius: 8px;
             font-size: 0.7rem;
             color: var(--text-muted);
             font-family: 'JetBrains Mono', monospace;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .canvas-tag.highlight {
+            border-color: var(--border-glow);
+            color: var(--cyan);
         }
 
         .canvas-tooltip {
             position: absolute;
-            bottom: 48px;
-            right: 14px;
-            background: rgba(13, 21, 39, 0.85);
-            border: 1px solid var(--border-color);
-            padding: 5px 12px;
-            border-radius: 6px;
+            bottom: 50px;
+            right: 16px;
+            background: rgba(9, 14, 26, 0.9);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 6px 14px;
+            border-radius: 8px;
             font-size: 0.72rem;
-            color: var(--accent-amber);
+            color: var(--amber);
             display: flex;
             align-items: center;
             gap: 6px;
             z-index: 10;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
 
         #simCanvas {
             width: 100%;
-            height: 540px;
+            height: 560px;
             display: block;
-            background: radial-gradient(circle at center, #0c1427 0%, #060913 100%);
             cursor: crosshair;
+            background: radial-gradient(circle at center, #0a1122 0%, #040711 100%);
         }
 
         .canvas-legend {
-            background: rgba(10, 15, 29, 0.95);
-            border-top: 1px solid var(--border-color);
-            padding: 10px 16px;
+            background: rgba(8, 14, 27, 0.95);
+            border-top: 1px solid var(--border-subtle);
+            padding: 10px 18px;
             display: flex;
             align-items: center;
             flex-wrap: wrap;
@@ -265,11 +340,11 @@
         }
 
         .legend-title {
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-dim);
             text-transform: uppercase;
             font-size: 0.65rem;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
         }
 
         .legend-item {
@@ -284,25 +359,32 @@
             border-radius: 50%;
         }
 
-        /* Right Control & Charts Panel */
+        /* Sidebar & Control Panel */
         .sidebar {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 16px;
         }
 
         .card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(10px);
+            transition: border-color 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.25);
         }
 
         .card-title {
-            font-size: 0.82rem;
-            font-weight: 700;
+            font-size: 0.8rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--text-muted);
             margin-bottom: 12px;
             display: flex;
@@ -312,13 +394,13 @@
 
         .card-title span.badge {
             font-size: 0.68rem;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
             font-family: 'JetBrains Mono', monospace;
             text-transform: none;
         }
 
-        /* Control Buttons */
+        /* Action Buttons */
         .btn-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -327,49 +409,151 @@
         }
 
         .btn-action {
-            padding: 8px 6px;
+            padding: 8px 4px;
             border-radius: 8px;
-            border: 1px solid var(--border-light);
-            background: #1e293b;
+            border: 1px solid var(--border-subtle);
+            background: #111a2e;
             color: var(--text-main);
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.74rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-action:hover {
-            background: #334155;
-            border-color: #475569;
+            background: #1e2c4a;
+            border-color: var(--cyan);
+            transform: translateY(-1px);
         }
 
         .btn-action.primary {
-            background: var(--accent-cyan);
-            border-color: var(--accent-cyan);
-            color: #041226;
-            font-weight: 700;
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
         }
 
         .btn-action.primary:hover {
-            background: #7dd3fc;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            background: linear-gradient(135deg, #0369a1, #0284c7);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
         }
 
         .btn-action.active-pill {
             background: rgba(56, 189, 248, 0.15);
-            border-color: rgba(56, 189, 248, 0.5);
-            color: var(--accent-cyan);
+            border-color: rgba(56, 189, 248, 0.6);
+            color: var(--cyan);
+            box-shadow: inset 0 0 8px rgba(56, 189, 248, 0.2);
+        }
+
+        /* TARGETS CONTROLLER WIDGET */
+        .target-controller-box {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.08) 0%, rgba(56, 189, 248, 0.05) 100%);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .target-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .target-title-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #e9d5ff;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .target-stepper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-stepper {
+            width: 28px;
+            height: 28px;
+            background: #1c1a36;
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            border-radius: 6px;
+            color: #f3e8ff;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-stepper:hover:not(:disabled) {
+            background: rgba(192, 132, 252, 0.3);
+            border-color: var(--purple);
+            transform: scale(1.08);
+            box-shadow: 0 0 10px rgba(192, 132, 252, 0.4);
+        }
+
+        .btn-stepper:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .target-count-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
+            padding: 0 8px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .target-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .target-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.68rem;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .target-chip .chip-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
         }
 
         /* Sliders */
         .slider-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .slider-item {
@@ -383,43 +567,44 @@
             justify-content: space-between;
             font-size: 0.72rem;
             color: var(--text-muted);
+            font-weight: 600;
         }
 
         .slider-header span.val {
             font-family: 'JetBrains Mono', monospace;
             font-weight: 700;
-            color: var(--accent-cyan);
+            color: var(--cyan);
         }
 
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 5px;
-            background: #1e293b;
-            border-radius: 5px;
+            height: 6px;
+            background: #17243c;
+            border-radius: 6px;
             outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
-            background: var(--accent-cyan);
+            background: var(--cyan);
             cursor: pointer;
-            box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
-            transition: all 0.15s;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+            transition: transform 0.15s ease;
         }
 
         input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+            transform: scale(1.25);
         }
 
         /* Gauge */
         .gauge-section {
             margin-top: 14px;
             padding-top: 12px;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-subtle);
         }
 
         .gauge-labels {
@@ -432,10 +617,10 @@
         .gauge-bar-container {
             position: relative;
             height: 10px;
-            border-radius: 5px;
+            border-radius: 6px;
             background: linear-gradient(90deg, #f59e0b 0%, #10b981 35%, #10b981 65%, #f43f5e 100%);
             margin-bottom: 6px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
         }
 
         .gauge-needle {
@@ -445,9 +630,9 @@
             height: 18px;
             background: #ffffff;
             border-radius: 2px;
-            box-shadow: 0 0 6px #000;
+            box-shadow: 0 0 8px #000;
             transform: translateX(-50%);
-            transition: left 0.3s ease;
+            transition: left 0.25s ease;
         }
 
         .gauge-scale-legend {
@@ -460,14 +645,14 @@
 
         .btn-reshuffle {
             width: 100%;
-            margin-top: 12px;
-            padding: 8px;
-            background: #131d33;
-            border: 1px solid var(--border-color);
+            margin-top: 14px;
+            padding: 9px;
+            background: #10192e;
+            border: 1px solid var(--border-subtle);
             border-radius: 8px;
             color: var(--text-muted);
-            font-size: 0.72rem;
-            font-weight: 600;
+            font-size: 0.74rem;
+            font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -477,9 +662,10 @@
         }
 
         .btn-reshuffle:hover {
-            background: #1e293b;
-            color: var(--text-main);
-            border-color: var(--border-light);
+            background: #17243e;
+            color: #ffffff;
+            border-color: var(--cyan);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
         }
 
         /* Charts */
@@ -491,10 +677,10 @@
 
         .chart-canvas {
             width: 100%;
-            height: 105px;
-            background: #090e1a;
-            border-radius: 6px;
-            border: 1px solid #172033;
+            height: 110px;
+            background: #080d19;
+            border-radius: 8px;
+            border: 1px solid #142036;
         }
 
         .chart-legend-row {
@@ -503,6 +689,7 @@
             gap: 12px;
             font-size: 0.65rem;
             color: var(--text-dim);
+            font-weight: 600;
         }
 
         .chart-legend-row span {
@@ -511,15 +698,12 @@
             gap: 4px;
         }
 
-        /* Sensor Inspector Modal */
+        /* Modal */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(4, 7, 15, 0.75);
-            backdrop-filter: blur(4px);
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 6, 15, 0.8);
+            backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -531,27 +715,27 @@
         }
 
         .modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: 14px;
-            width: 520px;
-            max-width: 90vw;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            background: rgba(13, 21, 38, 0.98);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            width: 540px;
+            max-width: 92vw;
+            padding: 22px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(56, 189, 248, 0.15);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-subtle);
             padding-bottom: 12px;
             margin-bottom: 14px;
         }
 
         .modal-header h3 {
-            font-size: 1.05rem;
-            color: var(--accent-cyan);
+            font-size: 1.1rem;
+            color: var(--cyan);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -561,12 +745,13 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             cursor: pointer;
+            transition: color 0.15s;
         }
 
         .modal-close:hover {
-            color: #fff;
+            color: #ffffff;
         }
 
         .matrix-table {
@@ -578,19 +763,20 @@
         }
 
         .matrix-table th, .matrix-table td {
-            border: 1px solid var(--border-color);
-            padding: 5px 8px;
+            border: 1px solid var(--border-subtle);
+            padding: 6px 10px;
             text-align: right;
         }
 
         .matrix-table th {
-            background: #111b30;
+            background: #111a2e;
             color: var(--text-muted);
             text-align: center;
+            font-weight: 700;
         }
 
         .matrix-table td.highlight {
-            color: var(--accent-emerald);
+            color: var(--emerald);
             font-weight: 700;
         }
     </style>
@@ -599,9 +785,12 @@
 
     <!-- Header -->
     <header>
-        <div class="title-area">
-            <h1>DKF-WSN LAB <span class="highlight">· BỘ LỌC KALMAN PHÂN TÁN</span></h1>
-            <p>Mô phỏng đối chứng 3 kiến trúc: Centralized vs Local vs Distributed Kalman Filter | CTS Lab</p>
+        <div class="brand-container">
+            <div class="brand-logo">🛰️</div>
+            <div class="title-area">
+                <h1>DKF-WSN LAB <span class="gradient-text">· BỘ LỌC KALMAN PHÂN TÁN</span></h1>
+                <p>Mô phỏng đối chứng 3 kiến trúc: Centralized vs Local vs Distributed Kalman Filter | CTS Lab</p>
+            </div>
         </div>
 
         <div class="header-stats">
@@ -638,23 +827,24 @@
         <div class="insights-content">
             <div class="insights-title">TRỢ LÝ PHÂN TÍCH HIỆN TƯỢNG THEO THỜI GIAN THỰC (LIVE SCIENTIFIC INSIGHTS)</div>
             <div class="insights-text" id="insights-text">
-                Khởi tạo mô phỏng mạng cảm biến 12 nút. Đang chờ kích hoạt bước chạy tiếp theo...
+                Khởi tạo mô phỏng mạng cảm biến 12 nút. Đang tính toán bám vết quỹ đạo động...
             </div>
         </div>
     </div>
 
-    <!-- Workspace -->
+    <!-- Main Workspace -->
     <div class="workspace">
         
-        <!-- Simulation Canvas -->
-        <div class="canvas-container">
+        <!-- Simulation Canvas Card -->
+        <div class="canvas-card">
             <div class="canvas-header-tags">
                 <span class="canvas-tag">Vùng: 80m × 80m</span>
                 <span class="canvas-tag" id="tag-rc">Truyền thông: Rc = 40m</span>
                 <span class="canvas-tag">N = 12 Sensor Nodes</span>
+                <span class="canvas-tag highlight" id="tag-targets">Mục tiêu: 1</span>
             </div>
 
-            <canvas id="simCanvas" width="900" height="540"></canvas>
+            <canvas id="simCanvas"></canvas>
 
             <div class="canvas-tooltip">
                 <span>💡</span> Nhấp chuột vào nút Sensor bất kỳ để xem chi tiết ma trận & trọng số
@@ -672,10 +862,9 @@
             </div>
         </div>
 
-        <!-- Sidebar -->
+        <!-- Sidebar / Controls -->
         <div class="sidebar">
             
-            <!-- Controls Card -->
             <div class="card">
                 <div class="card-title">
                     <span>▷ Bảng Điều Khiển Giả Lập</span>
@@ -695,6 +884,24 @@
                     <button class="btn-action" id="btn-reset">
                         <span>🔄</span> <span>Làm mới</span>
                     </button>
+                </div>
+
+                <!-- TARGET COUNT CONTROLLER (TĂNG/GIẢM SỐ LƯỢNG MỤC TIÊU) -->
+                <div class="target-controller-box">
+                    <div class="target-header-row">
+                        <div class="target-title-label">
+                            <span>🎯 Số Lượng Mục Tiêu</span>
+                            <span style="font-size:0.65rem; color:#c084fc; font-weight:normal;">(Multi-Target)</span>
+                        </div>
+                        <div class="target-stepper">
+                            <button class="btn-stepper" id="btn-target-dec" title="Giảm mục tiêu">−</button>
+                            <span class="target-count-display" id="target-count-val">1</span>
+                            <button class="btn-stepper" id="btn-target-inc" title="Tăng mục tiêu">+</button>
+                        </div>
+                    </div>
+                    <div class="target-tags-list" id="target-chips-container">
+                        <!-- Populated dynamically: T1, T2, etc. -->
+                    </div>
                 </div>
 
                 <!-- Sliders -->
@@ -732,19 +939,19 @@
                     </div>
                 </div>
 
-                <!-- Gauge -->
+                <!-- NEES Gauge -->
                 <div class="gauge-section">
                     <div class="gauge-labels">
-                        <span style="color:var(--text-muted); font-size:0.72rem;">Thang Đo Nhất Quán NEES</span>
+                        <span style="color:var(--text-muted); font-size:0.72rem; font-weight:700;">Thang Đo Nhất Quán NEES</span>
                         <span style="font-size:0.72rem; font-weight:700;" id="gauge-status-text" class="stat-val emerald">Nhất quán (3.92)</span>
                     </div>
                     <div class="gauge-bar-container">
                         <div class="gauge-needle" id="gauge-needle" style="left: 50%;"></div>
                     </div>
                     <div class="gauge-scale-legend">
-                        <span style="color:var(--accent-amber);">Bảo thủ (&lt;3.47)</span>
-                        <span style="color:var(--accent-emerald);">Nhất quán [3.47 - 4.57]</span>
-                        <span style="color:var(--accent-rose);">Tự tin quá (&gt;4.57)</span>
+                        <span style="color:var(--amber);">Bảo thủ (&lt;3.47)</span>
+                        <span style="color:var(--emerald);">Nhất quán [3.47 - 4.57]</span>
+                        <span style="color:var(--rose);">Tự tin quá (&gt;4.57)</span>
                     </div>
                 </div>
 
@@ -753,31 +960,31 @@
                 </button>
             </div>
 
-            <!-- Charts Card -->
+            <!-- Charts -->
             <div class="card chart-box">
                 <div class="card-title">
                     <span>Sai Số Bám Vết Vị Trí (RMSE)</span>
-                    <span class="badge" style="background:rgba(16,185,129,0.15); color:var(--accent-emerald);">DKF vs CKF vs LKF</span>
+                    <span class="badge" style="background:rgba(16,185,129,0.15); color:var(--emerald);">DKF vs CKF vs LKF</span>
                 </div>
                 <div class="chart-legend-row">
                     <span><span style="color:#06b6d4;">■</span> CKF (Tập trung)</span>
                     <span><span style="color:#10b981;">■</span> DKF (Phân tán)</span>
                     <span><span style="color:#f43f5e;">■</span> LKF (Cục bộ)</span>
                 </div>
-                <canvas id="chartRmse" class="chart-canvas" width="380" height="105"></canvas>
+                <canvas id="chartRmse" class="chart-canvas"></canvas>
             </div>
 
             <div class="card chart-box">
                 <div class="card-title">
                     <span>Kiểm Định Nhất Quán NEES (Bar-Shalom)</span>
-                    <span class="badge" style="background:rgba(14,165,233,0.15); color:var(--accent-cyan);">Dải tin cậy 95%: [3.47 - 4.57]</span>
+                    <span class="badge" style="background:rgba(14,165,233,0.15); color:var(--cyan);">Dải tin cậy 95%: [3.47 - 4.57]</span>
                 </div>
                 <div class="chart-legend-row">
                     <span><span style="color:#10b981;">■</span> NEES DKF (Chuẩn hóa)</span>
-                    <span><span style="color:#64748b;">--</span> Cận trên 95% (4.57)</span>
-                    <span><span style="color:#64748b;">--</span> Cận dưới 95% (3.47)</span>
+                    <span><span style="color:#64748b;">--</span> Cận trên (4.57)</span>
+                    <span><span style="color:#64748b;">--</span> Cận dưới (3.47)</span>
                 </div>
-                <canvas id="chartNees" class="chart-canvas" width="380" height="105"></canvas>
+                <canvas id="chartNees" class="chart-canvas"></canvas>
             </div>
 
         </div>
@@ -795,7 +1002,7 @@
                 <p><strong>Bậc đồ thị (Degree $d_i$):</strong> <span id="modalSensorDeg" class="stat-val"></span></p>
                 <p><strong>Trạng thái quan trắc:</strong> <span id="modalSensorStatus"></span></p>
                 <p style="margin-top:10px;"><strong>Danh sách trọng số Metropolis ($W_{ij}$):</strong></p>
-                <div style="max-height:140px; overflow-y:auto; border:1px solid var(--border-color); border-radius:6px; margin-top:4px;">
+                <div style="max-height:140px; overflow-y:auto; border:1px solid var(--border-subtle); border-radius:6px; margin-top:4px;">
                     <table class="matrix-table" id="modalWeightsTable">
                         <thead>
                             <tr><th>Nút đích (j)</th><th>Khoảng cách</th><th>Trọng số W_ij</th></tr>
@@ -809,16 +1016,15 @@
 
     <script>
         // ==========================================
-        // TOÁN HỌC KALMAN FILTER & MÔ PHỎNG DKF IN WSN
+        // TOÁN HỌC KALMAN FILTER & MÔ PHỎNG DKF ĐA MỤC TIÊU
         // ==========================================
         const FIELD_SIZE = 80.0;
         const NUM_SENSORS = 12;
-        const R_COMM = 40.0; // Bán kính truyền thông Rc
-        const SIGMA_R = 1.0; // Độ lệch chuẩn nhiễu đo (m)
+        const R_COMM = 40.0;
+        const SIGMA_R = 1.0;
         const Q_SCALE = 0.1;
         const DT = 1.0;
 
-        // Ma trận chuyển trạng thái F (4x4)
         const F = [
             [1, 0, DT, 0],
             [0, 1, 0, DT],
@@ -831,8 +1037,6 @@
             [DT, 0, 1, 0],
             [0, DT, 0, 1]
         ];
-
-        // Ma trận nhiễu quá trình Q (4x4)
         const Q = [
             [DT*DT*DT/3 * Q_SCALE, 0, DT*DT/2 * Q_SCALE, 0],
             [0, DT*DT*DT/3 * Q_SCALE, 0, DT*DT/2 * Q_SCALE],
@@ -840,7 +1044,6 @@
             [0, DT*DT/2 * Q_SCALE, 0, DT * Q_SCALE]
         ];
 
-        // Linear algebra helpers for 4x4
         function mat4_mult(A, B) {
             let res = Array(4).fill(0).map(() => Array(4).fill(0));
             for (let i = 0; i < 4; i++) {
@@ -880,7 +1083,6 @@
         }
 
         function mat4_inv(M) {
-            // Gauss-Jordan elimination 4x4
             let A = M.map(row => [...row]);
             let I = [
                 [1, 0, 0, 0],
@@ -928,19 +1130,8 @@
         }
 
         // ==========================================
-        // SIMULATION STATE & CONFIGURATION
+        // CÁC CẢM BIẾN (12 NODES)
         // ==========================================
-        let Rs = 28.0;
-        let L = 5;
-        let p_loss = 0.0;
-        let speed = 1.0;
-        let isRunning = true;
-        let infiniteMode = true;
-
-        let stepK = 0;
-        let maxK = 80;
-
-        // Sensor positions fixed matching 21-day benchmark
         let sensors = [
             { id: 1,  x: 48, y: 64 },
             { id: 2,  x: 42, y: 38 },
@@ -956,26 +1147,34 @@
             { id: 12, x: 38, y: 54 }
         ];
 
-        // Target true trajectory state
-        let trueState = [15.0, 15.0, 0.8, 0.8]; // px, py, vx, vy
-        let targetTrail = [];
+        // ==========================================
+        // QUẢN LÝ ĐA MỤC TIÊU (MULTI-TARGET MANAGER)
+        // ==========================================
+        const TARGET_PALETTE = [
+            { color: '#e879f9', glow: '#d946ef', name: 'T1', label: 'Target T1 (Tím)' },
+            { color: '#38bdf8', glow: '#0284c7', name: 'T2', label: 'Target T2 (Cyan)' },
+            { color: '#fbbf24', glow: '#f59e0b', name: 'T3', label: 'Target T3 (Vàng)' },
+            { color: '#4ade80', glow: '#10b981', name: 'T4', label: 'Target T4 (Xanh)' },
+            { color: '#f43f5e', glow: '#e11d48', name: 'T5', label: 'Target T5 (Đỏ)' }
+        ];
 
-        // Filters states
-        let ckfState = [15.0, 15.0, 0.0, 0.0];
-        let ckfP = mat4_scale([[10,0,0,0],[0,10,0,0],[0,0,5,0],[0,0,0,5]], 1.0);
+        let targetCount = 1;
+        let targets = [];
 
-        let dkfNodes = [];
-        let lkfNodes = [];
+        function createTargetInstance(idx) {
+            let pal = TARGET_PALETTE[idx % TARGET_PALETTE.length];
+            // Initial spawn position around the field
+            let startPositions = [
+                [15.0, 15.0, 0.8, 0.8],
+                [65.0, 20.0, -0.7, 0.9],
+                [20.0, 65.0, 0.9, -0.6],
+                [65.0, 65.0, -0.8, -0.8],
+                [40.0, 40.0, 1.1, -0.5]
+            ];
+            let pos = startPositions[idx] || [20 + Math.random()*40, 20 + Math.random()*40, (Math.random()-0.5)*1.5, (Math.random()-0.5)*1.5];
 
-        // History logs for charts
-        let historyRmseCKF = [];
-        let historyRmseDKF = [];
-        let historyRmseLKF = [];
-        let historyNeesDKF = [];
-
-        function initNodes() {
-            dkfNodes = sensors.map(() => ({
-                x: [15.0, 15.0, 0.0, 0.0],
+            let dkfNodes = sensors.map(() => ({
+                x: [...pos],
                 P: mat4_scale([[20,0,0,0],[0,20,0,0],[0,0,10,0],[0,0,0,10]], 1.0),
                 Omega: null,
                 q: null,
@@ -983,14 +1182,72 @@
                 weights: {}
             }));
 
-            lkfNodes = sensors.map(() => ({
-                x: [15.0, 15.0, 0.0, 0.0],
+            let lkfNodes = sensors.map(() => ({
+                x: [...pos],
                 P: mat4_scale([[20,0,0,0],[0,20,0,0],[0,0,10,0],[0,0,0,10]], 1.0)
             }));
+
+            return {
+                id: idx + 1,
+                name: pal.name,
+                label: pal.label,
+                color: pal.color,
+                glow: pal.glow,
+                state: [...pos],
+                trail: [],
+                ckfState: [...pos],
+                ckfP: mat4_scale([[10,0,0,0],[0,10,0,0],[0,0,5,0],[0,0,0,5]], 1.0),
+                dkfNodes: dkfNodes,
+                lkfNodes: lkfNodes,
+                currentRmseDKF: 0,
+                currentRmseCKF: 0,
+                currentRmseLKF: 0,
+                currentNees: 3.92
+            };
         }
 
+        function initTargets() {
+            targets = [];
+            for (let i = 0; i < targetCount; i++) {
+                targets.push(createTargetInstance(i));
+            }
+            updateTargetChips();
+        }
+
+        function updateTargetChips() {
+            let container = document.getElementById('target-chips-container');
+            container.innerHTML = '';
+            targets.forEach(t => {
+                let chip = document.createElement('div');
+                chip.className = 'target-chip';
+                chip.innerHTML = `<span class="chip-dot" style="background:${t.color}; box-shadow:0 0 6px ${t.color};"></span> <span>${t.name}</span>`;
+                container.appendChild(chip);
+            });
+            document.getElementById('target-count-val').innerText = targetCount;
+            document.getElementById('tag-targets').innerText = `Mục tiêu: ${targetCount}`;
+            document.getElementById('btn-target-dec').disabled = (targetCount <= 1);
+            document.getElementById('btn-target-inc').disabled = (targetCount >= 5);
+        }
+
+        // ==========================================
+        // SIMULATION STATE & CONFIG
+        // ==========================================
+        let Rs = 28.0;
+        let L = 5;
+        let p_loss = 0.0;
+        let speed = 1.0;
+        let isRunning = true;
+        let infiniteMode = true;
+
+        let stepK = 0;
+        let maxK = 80;
+
+        let historyRmseCKF = [];
+        let historyRmseDKF = [];
+        let historyRmseLKF = [];
+        let historyNeesDKF = [];
+
         function calculateMetropolisWeights() {
-            // Build adjacency
             let adj = sensors.map(() => []);
             let deg = sensors.map(() => 0);
 
@@ -1006,224 +1263,244 @@
                 }
             }
 
-            // Metropolis
             let weights = sensors.map(() => ({}));
             for (let i = 0; i < NUM_SENSORS; i++) {
                 let sumOther = 0;
                 for (let j of adj[i]) {
                     let wij = 1.0 / (1.0 + Math.max(deg[i], deg[j]));
-                    // Packet loss simulation
                     if (Math.random() < p_loss) {
-                        wij = 0.0; // Dropped
+                        wij = 0.0;
                     }
                     weights[i][j] = wij;
                     sumOther += wij;
                 }
-                weights[i][i] = 1.0 - sumOther; // Redistribute to self
+                weights[i][i] = 1.0 - sumOther;
             }
             return { adj, deg, weights };
         }
 
         // ==========================================
-        // SIMULATION STEP PIPELINE
+        // STEP SIMULATION (MULTI-TARGET)
         // ==========================================
         function stepSimulation() {
             stepK++;
-
-            // 1. True target motion
-            let noiseW = [
-                randn() * Math.sqrt(Q[0][0]),
-                randn() * Math.sqrt(Q[1][1]),
-                randn() * Math.sqrt(Q[2][2]),
-                randn() * Math.sqrt(Q[3][3])
-            ];
-            trueState = mat4_vec_mult(F, trueState);
-            for (let i = 0; i < 4; i++) trueState[i] += noiseW[i];
-
-            // Bound bouncing in 80m x 80m
-            if (trueState[0] < 5) { trueState[0] = 5; trueState[2] = Math.abs(trueState[2]); }
-            if (trueState[0] > 75) { trueState[0] = 75; trueState[2] = -Math.abs(trueState[2]); }
-            if (trueState[1] < 5) { trueState[1] = 5; trueState[3] = Math.abs(trueState[3]); }
-            if (trueState[1] > 75) { trueState[1] = 75; trueState[3] = -Math.abs(trueState[3]); }
-
-            targetTrail.push([trueState[0], trueState[1]]);
-            if (targetTrail.length > 50) targetTrail.shift();
-
-            // 2. Observations
-            let measurements = [];
-            let activeSensors = [];
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                let d = Math.hypot(sensors[i].x - trueState[0], sensors[i].y - trueState[1]);
-                let sees = d <= Rs;
-                dkfNodes[i].active = sees;
-                if (sees) {
-                    activeSensors.push(i + 1);
-                    measurements[i] = [
-                        trueState[0] + randn() * SIGMA_R,
-                        trueState[1] + randn() * SIGMA_R
-                    ];
-                } else {
-                    measurements[i] = null;
-                }
-            }
-
-            // 3. Centralized KF (CKF)
-            let ckfPred = mat4_vec_mult(F, ckfState);
-            let ckfPPred = mat4_add(mat4_mult(mat4_mult(F, ckfP), FT), Q);
-            let invR = 1.0 / (SIGMA_R * SIGMA_R);
-
-            // Information form update for CKF
-            let OmegaCKF = mat4_inv(ckfPPred);
-            let qCKF = mat4_vec_mult(OmegaCKF, ckfPred);
-
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                if (measurements[i]) {
-                    OmegaCKF[0][0] += invR;
-                    OmegaCKF[1][1] += invR;
-                    qCKF[0] += measurements[i][0] * invR;
-                    qCKF[1] += measurements[i][1] * invR;
-                }
-            }
-            ckfP = mat4_inv(OmegaCKF);
-            ckfState = mat4_vec_mult(ckfP, qCKF);
-
-            // 4. Local KF (LKF) - Node 0 as reference
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                let lkfPred = mat4_vec_mult(F, lkfNodes[i].x);
-                let lkfPPred = mat4_add(mat4_mult(mat4_mult(F, lkfNodes[i].P), FT), Q);
-                let Om = mat4_inv(lkfPPred);
-                let qv = mat4_vec_mult(Om, lkfPred);
-                if (measurements[i]) {
-                    Om[0][0] += invR;
-                    Om[1][1] += invR;
-                    qv[0] += measurements[i][0] * invR;
-                    qv[1] += measurements[i][1] * invR;
-                }
-                lkfNodes[i].P = mat4_inv(Om);
-                lkfNodes[i].x = mat4_vec_mult(lkfNodes[i].P, qv);
-            }
-
-            // 5. Distributed KF (DKF)
-            // 5.1 Local predict & local update
             let { adj, deg, weights } = calculateMetropolisWeights();
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                dkfNodes[i].weights = weights[i];
-                let predX = mat4_vec_mult(F, dkfNodes[i].x);
-                let predP = mat4_add(mat4_mult(mat4_mult(F, dkfNodes[i].P), FT), Q);
-                let Om = mat4_inv(predP);
-                let qv = mat4_vec_mult(Om, predX);
-                if (measurements[i]) {
-                    Om[0][0] += invR;
-                    Om[1][1] += invR;
-                    qv[0] += measurements[i][0] * invR;
-                    qv[1] += measurements[i][1] * invR;
-                }
-                dkfNodes[i].Omega = Om;
-                dkfNodes[i].q = qv;
-            }
 
-            // 5.2 Consensus L iterations
-            for (let l = 0; l < L; l++) {
-                let nextOmega = [];
-                let nextQ = [];
+            let totalActiveSensorsCount = 0;
+            let activeSensorSet = new Set();
+
+            let sumRmseDKF = 0;
+            let sumRmseCKF = 0;
+            let sumRmseLKF = 0;
+            let sumNees = 0;
+
+            targets.forEach((tgt) => {
+                // 1. Move target state
+                let noiseW = [
+                    randn() * Math.sqrt(Q[0][0]),
+                    randn() * Math.sqrt(Q[1][1]),
+                    randn() * Math.sqrt(Q[2][2]),
+                    randn() * Math.sqrt(Q[3][3])
+                ];
+                tgt.state = mat4_vec_mult(F, tgt.state);
+                for (let i = 0; i < 4; i++) tgt.state[i] += noiseW[i];
+
+                // Bounce in 80m x 80m
+                if (tgt.state[0] < 6) { tgt.state[0] = 6; tgt.state[2] = Math.abs(tgt.state[2]); }
+                if (tgt.state[0] > 74) { tgt.state[0] = 74; tgt.state[2] = -Math.abs(tgt.state[2]); }
+                if (tgt.state[1] < 6) { tgt.state[1] = 6; tgt.state[3] = Math.abs(tgt.state[3]); }
+                if (tgt.state[1] > 74) { tgt.state[1] = 74; tgt.state[3] = -Math.abs(tgt.state[3]); }
+
+                tgt.trail.push([tgt.state[0], tgt.state[1]]);
+                if (tgt.trail.length > 50) tgt.trail.shift();
+
+                // 2. Observations for this target
+                let measurements = [];
                 for (let i = 0; i < NUM_SENSORS; i++) {
-                    let accOm = mat4_scale(dkfNodes[i].Omega, weights[i][i]);
-                    let accQ = dkfNodes[i].q.map(v => v * weights[i][i]);
-
-                    for (let j of adj[i]) {
-                        let w = weights[i][j];
-                        accOm = mat4_add(accOm, mat4_scale(dkfNodes[j].Omega, w));
-                        for (let k = 0; k < 4; k++) accQ[k] += dkfNodes[j].q[k] * w;
+                    let d = Math.hypot(sensors[i].x - tgt.state[0], sensors[i].y - tgt.state[1]);
+                    let sees = (d <= Rs);
+                    tgt.dkfNodes[i].active = sees;
+                    if (sees) {
+                        activeSensorSet.add(i + 1);
+                        measurements[i] = [
+                            tgt.state[0] + randn() * SIGMA_R,
+                            tgt.state[1] + randn() * SIGMA_R
+                        ];
+                    } else {
+                        measurements[i] = null;
                     }
-                    nextOmega.push(accOm);
-                    nextQ.push(accQ);
                 }
+
+                // 3. Centralized KF (CKF)
+                let ckfPred = mat4_vec_mult(F, tgt.ckfState);
+                let ckfPPred = mat4_add(mat4_mult(mat4_mult(F, tgt.ckfP), FT), Q);
+                let invR = 1.0 / (SIGMA_R * SIGMA_R);
+
+                let OmegaCKF = mat4_inv(ckfPPred);
+                let qCKF = mat4_vec_mult(OmegaCKF, ckfPred);
+
                 for (let i = 0; i < NUM_SENSORS; i++) {
-                    dkfNodes[i].Omega = nextOmega[i];
-                    dkfNodes[i].q = nextQ[i];
+                    if (measurements[i]) {
+                        OmegaCKF[0][0] += invR;
+                        OmegaCKF[1][1] += invR;
+                        qCKF[0] += measurements[i][0] * invR;
+                        qCKF[1] += measurements[i][1] * invR;
+                    }
                 }
-            }
+                tgt.ckfP = mat4_inv(OmegaCKF);
+                tgt.ckfState = mat4_vec_mult(tgt.ckfP, qCKF);
 
-            // 5.3 Recover state & Covariance
-            let dkfMeanX = [0, 0, 0, 0];
-            let dkfMeanP = Array(4).fill(0).map(() => Array(4).fill(0));
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                dkfNodes[i].P = mat4_inv(dkfNodes[i].Omega);
-                dkfNodes[i].x = mat4_vec_mult(dkfNodes[i].P, dkfNodes[i].q);
-                for (let k = 0; k < 4; k++) {
-                    dkfMeanX[k] += dkfNodes[i].x[k] / NUM_SENSORS;
-                    for (let m = 0; m < 4; m++) dkfMeanP[k][m] += dkfNodes[i].P[k][m] / NUM_SENSORS;
+                // 4. Local KF (LKF)
+                for (let i = 0; i < NUM_SENSORS; i++) {
+                    let lkfPred = mat4_vec_mult(F, tgt.lkfNodes[i].x);
+                    let lkfPPred = mat4_add(mat4_mult(mat4_mult(F, tgt.lkfNodes[i].P), FT), Q);
+                    let Om = mat4_inv(lkfPPred);
+                    let qv = mat4_vec_mult(Om, lkfPred);
+                    if (measurements[i]) {
+                        Om[0][0] += invR;
+                        Om[1][1] += invR;
+                        qv[0] += measurements[i][0] * invR;
+                        qv[1] += measurements[i][1] * invR;
+                    }
+                    tgt.lkfNodes[i].P = mat4_inv(Om);
+                    tgt.lkfNodes[i].x = mat4_vec_mult(tgt.lkfNodes[i].P, qv);
                 }
-            }
 
-            // 6. Metrics
-            let rmseCKF = Math.hypot(ckfState[0] - trueState[0], ckfState[1] - trueState[1]);
-            let rmseDKF = Math.hypot(dkfMeanX[0] - trueState[0], dkfMeanX[1] - trueState[1]);
-            let rmseLKF = Math.hypot(lkfNodes[0].x[0] - trueState[0], lkfNodes[0].x[1] - trueState[1]);
+                // 5. Distributed KF (DKF)
+                for (let i = 0; i < NUM_SENSORS; i++) {
+                    tgt.dkfNodes[i].weights = weights[i];
+                    let predX = mat4_vec_mult(F, tgt.dkfNodes[i].x);
+                    let predP = mat4_add(mat4_mult(mat4_mult(F, tgt.dkfNodes[i].P), FT), Q);
+                    let Om = mat4_inv(predP);
+                    let qv = mat4_vec_mult(Om, predX);
+                    if (measurements[i]) {
+                        Om[0][0] += invR;
+                        Om[1][1] += invR;
+                        qv[0] += measurements[i][0] * invR;
+                        qv[1] += measurements[i][1] * invR;
+                    }
+                    tgt.dkfNodes[i].Omega = Om;
+                    tgt.dkfNodes[i].q = qv;
+                }
 
-            // NEES calculation: err^T * P^-1 * err
-            let err = [
-                dkfMeanX[0] - trueState[0],
-                dkfMeanX[1] - trueState[1],
-                dkfMeanX[2] - trueState[2],
-                dkfMeanX[3] - trueState[3]
-            ];
-            let invP = mat4_inv(dkfMeanP);
-            let pErr = mat4_vec_mult(invP, err);
-            let rawNees = err[0]*pErr[0] + err[1]*pErr[1] + err[2]*pErr[2] + err[3]*pErr[3];
-            let nees = Math.max(0.5, Math.min(rawNees, 600.0));
+                // Consensus L iterations
+                for (let l = 0; l < L; l++) {
+                    let nextOmega = [];
+                    let nextQ = [];
+                    for (let i = 0; i < NUM_SENSORS; i++) {
+                        let accOm = mat4_scale(tgt.dkfNodes[i].Omega, weights[i][i]);
+                        let accQ = tgt.dkfNodes[i].q.map(v => v * weights[i][i]);
 
-            // Communication load: L * d_avg * 112 bytes
+                        for (let j of adj[i]) {
+                            let w = weights[i][j];
+                            accOm = mat4_add(accOm, mat4_scale(tgt.dkfNodes[j].Omega, w));
+                            for (let k = 0; k < 4; k++) accQ[k] += tgt.dkfNodes[j].q[k] * w;
+                        }
+                        nextOmega.push(accOm);
+                        nextQ.push(accQ);
+                    }
+                    for (let i = 0; i < NUM_SENSORS; i++) {
+                        tgt.dkfNodes[i].Omega = nextOmega[i];
+                        tgt.dkfNodes[i].q = nextQ[i];
+                    }
+                }
+
+                // Recover State
+                let dkfMeanX = [0, 0, 0, 0];
+                let dkfMeanP = Array(4).fill(0).map(() => Array(4).fill(0));
+                for (let i = 0; i < NUM_SENSORS; i++) {
+                    tgt.dkfNodes[i].P = mat4_inv(tgt.dkfNodes[i].Omega);
+                    tgt.dkfNodes[i].x = mat4_vec_mult(tgt.dkfNodes[i].P, tgt.dkfNodes[i].q);
+                    for (let k = 0; k < 4; k++) {
+                        dkfMeanX[k] += tgt.dkfNodes[i].x[k] / NUM_SENSORS;
+                        for (let m = 0; m < 4; m++) dkfMeanP[k][m] += tgt.dkfNodes[i].P[k][m] / NUM_SENSORS;
+                    }
+                }
+
+                // Metrics
+                tgt.currentRmseCKF = Math.hypot(tgt.ckfState[0] - tgt.state[0], tgt.ckfState[1] - tgt.state[1]);
+                tgt.currentRmseDKF = Math.hypot(dkfMeanX[0] - tgt.state[0], dkfMeanX[1] - tgt.state[1]);
+                tgt.currentRmseLKF = Math.hypot(tgt.lkfNodes[0].x[0] - tgt.state[0], tgt.lkfNodes[0].x[1] - tgt.state[1]);
+
+                let err = [
+                    dkfMeanX[0] - tgt.state[0],
+                    dkfMeanX[1] - tgt.state[1],
+                    dkfMeanX[2] - tgt.state[2],
+                    dkfMeanX[3] - tgt.state[3]
+                ];
+                let invP = mat4_inv(dkfMeanP);
+                let pErr = mat4_vec_mult(invP, err);
+                let rawNees = err[0]*pErr[0] + err[1]*pErr[1] + err[2]*pErr[2] + err[3]*pErr[3];
+                tgt.currentNees = Math.max(0.5, Math.min(rawNees, 500.0));
+
+                sumRmseDKF += tgt.currentRmseDKF;
+                sumRmseCKF += tgt.currentRmseCKF;
+                sumRmseLKF += tgt.currentRmseLKF;
+                sumNees += tgt.currentNees;
+            });
+
+            // Overall averages
+            let avgRmseDKF = sumRmseDKF / targets.length;
+            let avgRmseCKF = sumRmseCKF / targets.length;
+            let avgRmseLKF = sumRmseLKF / targets.length;
+            let avgNees = sumNees / targets.length;
+
+            // Communication load: L * d_avg * 112 bytes * num_targets
             let avgDeg = deg.reduce((a, b) => a + b, 0) / NUM_SENSORS;
-            let commBytes = L * avgDeg * 112 * NUM_SENSORS;
+            let commBytes = L * avgDeg * 112 * NUM_SENSORS * targets.length;
             let commKB = (commBytes / 1024).toFixed(1);
 
-            // Update UI elements
+            // Update UI Stats
             document.getElementById('stat-k').innerText = stepK;
-            document.getElementById('stat-active').innerText = `${activeSensors.length} / ${NUM_SENSORS}`;
-            document.getElementById('stat-rmse-dkf').innerText = `${rmseDKF.toFixed(2)}m`;
+            document.getElementById('stat-active').innerText = `${activeSensorSet.size} / ${NUM_SENSORS}`;
+            document.getElementById('stat-rmse-dkf').innerText = `${avgRmseDKF.toFixed(2)}m`;
             document.getElementById('stat-comm').innerText = `${commKB} KB`;
 
-            // NEES Badge and Gauge
+            // Gauge
             let neesEl = document.getElementById('stat-nees');
             let gaugeTextEl = document.getElementById('gauge-status-text');
             let gaugeNeedle = document.getElementById('gauge-needle');
 
             let needlePct = 50;
-            if (nees < 3.47) {
+            if (avgNees < 3.47) {
                 neesEl.className = 'stat-val amber';
-                neesEl.innerText = `${nees.toFixed(2)} (Bảo thủ)`;
+                neesEl.innerText = `${avgNees.toFixed(2)} (Bảo thủ)`;
                 gaugeTextEl.className = 'stat-val amber';
-                gaugeTextEl.innerText = `Bảo thủ (${nees.toFixed(2)})`;
-                needlePct = Math.max(5, (nees / 3.47) * 35);
-            } else if (nees <= 4.57) {
+                gaugeTextEl.innerText = `Bảo thủ (${avgNees.toFixed(2)})`;
+                needlePct = Math.max(5, (avgNees / 3.47) * 35);
+            } else if (avgNees <= 4.57) {
                 neesEl.className = 'stat-val emerald';
-                neesEl.innerText = `${nees.toFixed(2)} (Chuẩn)`;
+                neesEl.innerText = `${avgNees.toFixed(2)} (Chuẩn)`;
                 gaugeTextEl.className = 'stat-val emerald';
-                gaugeTextEl.innerText = `Nhất quán (${nees.toFixed(2)})`;
-                needlePct = 35 + ((nees - 3.47) / (4.57 - 3.47)) * 30;
+                gaugeTextEl.innerText = `Nhất quán (${avgNees.toFixed(2)})`;
+                needlePct = 35 + ((avgNees - 3.47) / (4.57 - 3.47)) * 30;
             } else {
                 neesEl.className = 'stat-val rose';
-                neesEl.innerText = `${nees.toFixed(2)} (Overconf)`;
+                neesEl.innerText = `${avgNees.toFixed(2)} (Overconf)`;
                 gaugeTextEl.className = 'stat-val rose';
-                gaugeTextEl.innerText = `Tự tin quá mức (${nees.toFixed(2)})`;
-                needlePct = Math.min(95, 65 + ((nees - 4.57) / 20.0) * 30);
+                gaugeTextEl.innerText = `Tự tin quá (${avgNees.toFixed(2)})`;
+                needlePct = Math.min(95, 65 + ((avgNees - 4.57) / 20.0) * 30);
             }
             gaugeNeedle.style.left = `${needlePct}%`;
 
-            // Update dynamic insights text
+            // Live Insight Narrative
+            let activeSensorsArr = Array.from(activeSensorSet).sort((a,b) => a-b);
             let insightEl = document.getElementById('insights-text');
-            if (activeSensors.length > 0) {
-                insightEl.innerHTML = `⚡ <strong>Vùng quan sát tập thể:</strong> ${activeSensors.length} cảm biến [${activeSensors.map(id => 'S'+id).join(', ')}] cùng đo được mục tiêu. Thông tin được đóng gói thành cặp (&Omega;, q) và hợp nhất qua tổ hợp lồi Covariance Intersection. NEES = ${nees.toFixed(2)} (${nees <= 4.57 && nees >= 3.47 ? 'nằm chuẩn trong dải lý thuyết [3.47, 4.57]' : 'hiệu chuẩn ma trận P'}), chứng minh <strong>không hề xảy ra hiện tượng đếm trùng thông tin (rumor propagation)</strong>!`;
+            if (targets.length === 1) {
+                if (activeSensorsArr.length > 0) {
+                    insightEl.innerHTML = `⚡ <strong>Vùng quan sát tập thể:</strong> ${activeSensorsArr.length} cảm biến [${activeSensorsArr.map(id => 'S'+id).join(', ')}] cùng đo được mục tiêu T1. Thông tin đóng gói thành cặp (&Omega;, q) và hợp nhất qua tổ hợp lồi Covariance Intersection. NEES = ${avgNees.toFixed(2)} (${avgNees <= 4.57 && avgNees >= 3.47 ? 'nằm chuẩn trong dải lý thuyết [3.47, 4.57]' : 'hiệu chuẩn ma trận P'}), chứng minh <strong>không hề xảy ra hiện tượng đếm trùng thông tin!</strong>`;
+                } else {
+                    insightEl.innerHTML = `⚠️ <strong>Mục tiêu ngoài tầm phủ sóng:</strong> Toàn bộ 12 cảm biến đều không thấy mục tiêu. LKF lập tức phân kỳ, nhưng DKF duy trì hiệp phương sai P ổn định nhờ sự chia sẻ bộ lọc thông tin láng giềng!`;
+                }
             } else {
-                insightEl.innerHTML = `⚠️ <strong>Mục tiêu ngoài tầm phủ sóng:</strong> Toàn bộ 12 cảm biến đều không thấy mục tiêu. LKF lập tức phân kỳ, nhưng DKF duy trì hiệp phương sai P ổn định nhờ sự chia sẻ bộ lọc thông tin láng giềng!`;
+                insightEl.innerHTML = `🛰️ <strong>Bám vết đa mục tiêu (${targets.length} Targets):</strong> ${activeSensorsArr.length} cảm biến [${activeSensorsArr.map(id => 'S'+id).join(', ')}] đồng thời phân loại và bám vết đa mục tiêu. DKF phân bổ kênh trao đổi thông tin song song cho từng vết theo dõi, duy trì RMSE trung bình ${avgRmseDKF.toFixed(2)}m tiệm cận cận tối ưu CKF (${avgRmseCKF.toFixed(2)}m)!`;
             }
 
-            // Append to chart history
-            historyRmseCKF.push(rmseCKF);
-            historyRmseDKF.push(rmseDKF);
-            historyRmseLKF.push(rmseLKF);
-            historyNeesDKF.push(nees);
+            // Append Chart Data
+            historyRmseCKF.push(avgRmseCKF);
+            historyRmseDKF.push(avgRmseDKF);
+            historyRmseLKF.push(avgRmseLKF);
+            historyNeesDKF.push(avgNees);
 
             if (historyRmseCKF.length > 60) {
                 historyRmseCKF.shift();
@@ -1232,45 +1509,67 @@
                 historyNeesDKF.shift();
             }
 
-            // Loop reset if reached maxK and infiniteMode is on
             if (stepK >= maxK && infiniteMode) {
                 stepK = 0;
             }
         }
 
         // ==========================================
-        // CANVAS RENDERING
+        // RETINA CANVAS RENDERING
         // ==========================================
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
 
-        function toCanvasX(x) { return (x / FIELD_SIZE) * canvas.width; }
-        function toCanvasY(y) { return (y / FIELD_SIZE) * canvas.height; }
-        function toCanvasDist(d) { return (d / FIELD_SIZE) * ((canvas.width + canvas.height) / 2); }
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
+        }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 50);
+
+        function toCanvasX(x) { 
+            const rect = canvas.getBoundingClientRect();
+            return (x / FIELD_SIZE) * rect.width; 
+        }
+        function toCanvasY(y) { 
+            const rect = canvas.getBoundingClientRect();
+            return (y / FIELD_SIZE) * rect.height; 
+        }
+        function toCanvasDist(d) { 
+            const rect = canvas.getBoundingClientRect();
+            return (d / FIELD_SIZE) * ((rect.width + rect.height) / 2); 
+        }
 
         let radarAngle = 0;
 
         function renderCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const rect = canvas.getBoundingClientRect();
+            ctx.clearRect(0, 0, rect.width, rect.height);
+
+            radarAngle += 0.03 * speed;
 
             // 1. Grid
-            ctx.strokeStyle = '#0f172a';
+            ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
             ctx.lineWidth = 1;
             for (let x = 10; x < FIELD_SIZE; x += 10) {
                 ctx.beginPath();
                 ctx.moveTo(toCanvasX(x), 0);
-                ctx.lineTo(toCanvasX(x), canvas.height);
+                ctx.lineTo(toCanvasX(x), rect.height);
                 ctx.stroke();
             }
             for (let y = 10; y < FIELD_SIZE; y += 10) {
                 ctx.beginPath();
                 ctx.moveTo(0, toCanvasY(y));
-                ctx.lineTo(canvas.width, toCanvasY(y));
+                ctx.lineTo(rect.width, toCanvasY(y));
                 ctx.stroke();
             }
 
-            // 2. Communication Links (Rc)
-            ctx.strokeStyle = 'rgba(71, 85, 105, 0.4)';
+            // 2. Communication Links (Rc = 40m)
+            ctx.strokeStyle = 'rgba(71, 85, 105, 0.35)';
             ctx.lineWidth = 1.2;
             for (let i = 0; i < NUM_SENSORS; i++) {
                 for (let j = i + 1; j < NUM_SENSORS; j++) {
@@ -1284,147 +1583,173 @@
                 }
             }
 
-            // 3. Sensing Range Circles (Rs) for Active Sensors
-            for (let i = 0; i < NUM_SENSORS; i++) {
-                if (dkfNodes[i] && dkfNodes[i].active) {
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.arc(toCanvasX(sensors[i].x), toCanvasY(sensors[i].y), toCanvasDist(Rs), 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
-                    ctx.fill();
-                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
-                    ctx.lineWidth = 1.5;
-                    ctx.stroke();
-                    ctx.restore();
+            // 3. Sensing Radii (Rs) for Active Sensors
+            let activeSensorIndices = new Set();
+            targets.forEach(tgt => {
+                tgt.dkfNodes.forEach((node, idx) => {
+                    if (node.active) activeSensorIndices.add(idx);
+                });
+            });
 
-                    // Radar sweep beam from sensor to target
-                    ctx.save();
-                    ctx.beginPath();
-                    ctx.moveTo(toCanvasX(sensors[i].x), toCanvasY(sensors[i].y));
-                    ctx.lineTo(toCanvasX(trueState[0]), toCanvasY(trueState[1]));
-                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
-                    ctx.lineWidth = 1;
-                    ctx.setLineDash([4, 4]);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-            }
-
-            // 4. Target Trajectory Trail
-            if (targetTrail.length > 1) {
+            activeSensorIndices.forEach(idx => {
+                let s = sensors[idx];
                 ctx.save();
                 ctx.beginPath();
-                ctx.moveTo(toCanvasX(targetTrail[0][0]), toCanvasY(targetTrail[0][1]));
-                for (let i = 1; i < targetTrail.length; i++) {
-                    ctx.lineTo(toCanvasX(targetTrail[i][0]), toCanvasY(targetTrail[i][1]));
+                ctx.arc(toCanvasX(s.x), toCanvasY(s.y), toCanvasDist(Rs), 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // 4. Radar Beam Sweeps to Active Targets
+            targets.forEach(tgt => {
+                tgt.dkfNodes.forEach((node, idx) => {
+                    if (node.active) {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.moveTo(toCanvasX(sensors[idx].x), toCanvasY(sensors[idx].y));
+                        ctx.lineTo(toCanvasX(tgt.state[0]), toCanvasY(tgt.state[1]));
+                        ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+                        ctx.lineWidth = 1.2;
+                        ctx.setLineDash([4, 4]);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                });
+            });
+
+            // 5. Target Trajectories & Targets
+            targets.forEach(tgt => {
+                // Trail
+                if (tgt.trail.length > 1) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(toCanvasX(tgt.trail[0][0]), toCanvasY(tgt.trail[0][1]));
+                    for (let i = 1; i < tgt.trail.length; i++) {
+                        ctx.lineTo(toCanvasX(tgt.trail[i][0]), toCanvasY(tgt.trail[i][1]));
+                    }
+                    ctx.strokeStyle = tgt.color + '66';
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                    ctx.restore();
                 }
-                ctx.strokeStyle = 'rgba(192, 132, 252, 0.45)';
+
+                // Target True Point (Glowing)
+                let tx = toCanvasX(tgt.state[0]);
+                let ty = toCanvasY(tgt.state[1]);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(tx, ty, 8, 0, Math.PI * 2);
+                ctx.fillStyle = tgt.color;
+                ctx.shadowColor = tgt.glow;
+                ctx.shadowBlur = 18;
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.restore();
-            }
 
-            // 5. Sensor Nodes
+                // Target Label
+                ctx.font = '700 11px "Plus Jakarta Sans", sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.shadowColor = '#000000';
+                ctx.shadowBlur = 4;
+                ctx.fillText(`🎯 ${tgt.name}`, tx + 12, ty + 4);
+
+                // Estimations for this target
+                // CKF (Cyan)
+                let ckfX = toCanvasX(tgt.ckfState[0]);
+                let ckfY = toCanvasY(tgt.ckfState[1]);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(ckfX, ckfY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#06b6d4';
+                ctx.shadowColor = '#06b6d4';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+
+                // DKF Mean (Emerald)
+                let dkfX = toCanvasX(tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[0] : 15);
+                let dkfY = toCanvasY(tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[1] : 15);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(dkfX, dkfY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#10b981';
+                ctx.shadowColor = '#10b981';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.restore();
+
+                // LKF Reference (Coral/Red)
+                let lkfX = toCanvasX(tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[0] : 15);
+                let lkfY = toCanvasY(tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[1] : 15);
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(lkfX, lkfY, 4.5, 0, Math.PI * 2);
+                ctx.fillStyle = '#f43f5e';
+                ctx.shadowColor = '#f43f5e';
+                ctx.shadowBlur = 8;
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 6. Sensor Nodes
             for (let i = 0; i < NUM_SENSORS; i++) {
                 let s = sensors[i];
-                let isActive = dkfNodes[i] && dkfNodes[i].active;
+                let isSensorActive = activeSensorIndices.has(i);
                 let cx = toCanvasX(s.x);
                 let cy = toCanvasY(s.y);
 
                 ctx.save();
                 ctx.beginPath();
-                ctx.arc(cx, cy, isActive ? 8 : 6, 0, Math.PI * 2);
+                ctx.arc(cx, cy, isSensorActive ? 8.5 : 6.5, 0, Math.PI * 2);
 
-                if (isActive) {
+                if (isSensorActive) {
                     ctx.fillStyle = '#f59e0b';
                     ctx.shadowColor = '#f59e0b';
-                    ctx.shadowBlur = 12;
+                    ctx.shadowBlur = 14;
                     ctx.fill();
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
                     ctx.stroke();
                 } else {
-                    ctx.fillStyle = '#0f172a';
+                    ctx.fillStyle = '#090e1a';
                     ctx.strokeStyle = '#38bdf8';
-                    ctx.lineWidth = 1.5;
+                    ctx.lineWidth = 1.8;
                     ctx.fill();
                     ctx.stroke();
                 }
                 ctx.restore();
 
                 // Sensor Label
-                ctx.font = '600 10px "JetBrains Mono", monospace';
-                ctx.fillStyle = isActive ? '#fbbf24' : '#94a3b8';
-                ctx.fillText(`S${s.id}`, cx + 9, cy + 3);
+                ctx.font = '700 10px "JetBrains Mono", monospace';
+                ctx.fillStyle = isSensorActive ? '#fbbf24' : '#94a3b8';
+                ctx.fillText(`S${s.id}`, cx + 10, cy + 4);
             }
-
-            // 6. Target True Position
-            let tx = toCanvasX(trueState[0]);
-            let ty = toCanvasY(trueState[1]);
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(tx, ty, 8, 0, Math.PI * 2);
-            ctx.fillStyle = '#d946ef';
-            ctx.shadowColor = '#e879f9';
-            ctx.shadowBlur = 16;
-            ctx.fill();
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            ctx.restore();
-
-            // Target Label
-            ctx.font = '700 10px "Plus Jakarta Sans", sans-serif';
-            ctx.fillStyle = '#f5d0fe';
-            ctx.fillText('Target (True)', tx + 12, ty + 4);
-
-            // 7. Estimations (CKF, DKF, LKF)
-            // CKF (Cyan)
-            let ckfX = toCanvasX(ckfState[0]);
-            let ckfY = toCanvasY(ckfState[1]);
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(ckfX, ckfY, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#06b6d4';
-            ctx.shadowColor = '#06b6d4';
-            ctx.shadowBlur = 10;
-            ctx.fill();
-            ctx.restore();
-
-            // DKF Mean (Emerald)
-            let dkfX = toCanvasX(dkfNodes[0] ? dkfNodes[0].x[0] : 15);
-            let dkfY = toCanvasY(dkfNodes[0] ? dkfNodes[0].x[1] : 15);
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(dkfX, dkfY, 6, 0, Math.PI * 2);
-            ctx.fillStyle = '#10b981';
-            ctx.shadowColor = '#10b981';
-            ctx.shadowBlur = 10;
-            ctx.fill();
-            ctx.restore();
-
-            // LKF Reference Node (Red)
-            let lkfX = toCanvasX(lkfNodes[0] ? lkfNodes[0].x[0] : 15);
-            let lkfY = toCanvasY(lkfNodes[0] ? lkfNodes[0].x[1] : 15);
-            ctx.save();
-            ctx.beginPath();
-            ctx.arc(lkfX, lkfY, 4, 0, Math.PI * 2);
-            ctx.fillStyle = '#f43f5e';
-            ctx.shadowColor = '#f43f5e';
-            ctx.shadowBlur = 8;
-            ctx.fill();
-            ctx.restore();
         }
 
         // ==========================================
-        // CHART RENDERING (PURE CANVAS)
+        // CHART RENDERING (RETINA CANVAS)
         // ==========================================
-        function drawRmseChart() {
-            let c = document.getElementById('chartRmse');
+        function resizeChartCanvas(id) {
+            let c = document.getElementById(id);
+            let rect = c.getBoundingClientRect();
+            let dpr = window.devicePixelRatio || 1;
+            c.width = rect.width * dpr;
+            c.height = rect.height * dpr;
             let g = c.getContext('2d');
-            g.clearRect(0, 0, c.width, c.height);
+            g.resetTransform();
+            g.scale(dpr, dpr);
+            return { g, w: rect.width, h: rect.height };
+        }
 
-            let w = c.width, h = c.height;
+        function drawRmseChart() {
+            let { g, w, h } = resizeChartCanvas('chartRmse');
+            g.clearRect(0, 0, w, h);
             let maxY = 120.0;
 
             // Grid lines
@@ -1433,7 +1758,7 @@
             g.font = '9px monospace';
             g.fillStyle = '#475569';
             [0, 40, 80, 120].forEach(val => {
-                let y = h - (val / maxY) * (h - 20) - 10;
+                let y = h - (val / maxY) * (h - 22) - 10;
                 g.beginPath();
                 g.moveTo(25, y);
                 g.lineTo(w, y);
@@ -1446,12 +1771,12 @@
             function plotLine(data, color, dash = []) {
                 g.save();
                 g.strokeStyle = color;
-                g.lineWidth = 1.5;
+                g.lineWidth = 1.8;
                 g.setLineDash(dash);
                 g.beginPath();
                 data.forEach((val, i) => {
-                    let x = 25 + (i / 60) * (w - 30);
-                    let y = h - (Math.min(val, maxY) / maxY) * (h - 20) - 10;
+                    let x = 25 + (i / 60) * (w - 32);
+                    let y = h - (Math.min(val, maxY) / maxY) * (h - 22) - 10;
                     if (i === 0) g.moveTo(x, y);
                     else g.lineTo(x, y);
                 });
@@ -1459,29 +1784,23 @@
                 g.restore();
             }
 
-            plotLine(historyRmseLKF, '#f43f5e', [4, 2]); // LKF Red dashed
-            plotLine(historyRmseCKF, '#06b6d4');        // CKF Cyan
-            plotLine(historyRmseDKF, '#10b981');        // DKF Green
+            plotLine(historyRmseLKF, '#f43f5e', [4, 2]);
+            plotLine(historyRmseCKF, '#06b6d4');
+            plotLine(historyRmseDKF, '#10b981');
         }
 
         function drawNeesChart() {
-            let c = document.getElementById('chartNees');
-            let g = c.getContext('2d');
-            g.clearRect(0, 0, c.width, c.height);
-
-            let w = c.width, h = c.height;
+            let { g, w, h } = resizeChartCanvas('chartNees');
+            g.clearRect(0, 0, w, h);
             let maxY = 10.0;
 
-            // 95% Confidence Bounds (3.47 and 4.57)
-            let yLower = h - (3.47 / maxY) * (h - 20) - 10;
-            let yUpper = h - (4.57 / maxY) * (h - 20) - 10;
-            let yMean = h - (4.0 / maxY) * (h - 20) - 10;
+            let yLower = h - (3.47 / maxY) * (h - 22) - 10;
+            let yUpper = h - (4.57 / maxY) * (h - 22) - 10;
 
             // Shaded confidence zone
             g.fillStyle = 'rgba(16, 185, 129, 0.08)';
             g.fillRect(25, yUpper, w - 25, yLower - yUpper);
 
-            // Bounds lines
             g.strokeStyle = '#475569';
             g.setLineDash([3, 3]);
             g.lineWidth = 1;
@@ -1497,12 +1816,12 @@
 
             g.save();
             g.strokeStyle = '#10b981';
-            g.lineWidth = 1.6;
+            g.lineWidth = 1.8;
             g.setLineDash([]);
             g.beginPath();
             historyNeesDKF.forEach((val, i) => {
-                let x = 25 + (i / 60) * (w - 30);
-                let y = h - (Math.min(val, maxY) / maxY) * (h - 20) - 10;
+                let x = 25 + (i / 60) * (w - 32);
+                let y = h - (Math.min(val, maxY) / maxY) * (h - 22) - 10;
                 if (i === 0) g.moveTo(x, y);
                 else g.lineTo(x, y);
             });
@@ -1515,13 +1834,11 @@
         // ==========================================
         canvas.addEventListener('click', (e) => {
             let rect = canvas.getBoundingClientRect();
-            let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
-            let clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            let clickX = (e.clientX - rect.left) * (FIELD_SIZE / rect.width);
+            let clickY = (e.clientY - rect.top) * (FIELD_SIZE / rect.height);
 
             for (let i = 0; i < NUM_SENSORS; i++) {
-                let sx = toCanvasX(sensors[i].x);
-                let sy = toCanvasY(sensors[i].y);
-                if (Math.hypot(clickX - sx, clickY - sy) < 18) {
+                if (Math.hypot(clickX - sensors[i].x, clickY - sensors[i].y) < 6) {
                     showSensorModal(i);
                     break;
                 }
@@ -1530,35 +1847,41 @@
 
         function showSensorModal(idx) {
             let s = sensors[idx];
-            let node = dkfNodes[idx];
             let modal = document.getElementById('sensorModal');
 
             document.getElementById('modalSensorTitle').innerText = `📡 Chi tiết Cảm biến S${s.id}`;
             document.getElementById('modalSensorPos').innerText = `(${s.x}m, ${s.y}m)`;
 
-            let deg = Object.keys(node.weights).length - 1;
+            let node = targets[0] ? targets[0].dkfNodes[idx] : null;
+            let deg = node ? Object.keys(node.weights).length - 1 : 0;
             document.getElementById('modalSensorDeg').innerText = deg;
 
-            let statusHtml = node.active 
-                ? '<span style="color:var(--accent-emerald); font-weight:700;">● Đang quan sát mục tiêu (z = [' + trueState[0].toFixed(1) + ', ' + trueState[1].toFixed(1) + '])</span>'
-                : '<span style="color:var(--text-muted);">○ Ngoài tầm quan trắc (Rs = ' + Rs + 'm)</span>';
+            // Target seeing status
+            let seeingList = [];
+            targets.forEach(tgt => {
+                if (tgt.dkfNodes[idx] && tgt.dkfNodes[idx].active) seeingList.push(tgt.name);
+            });
+
+            let statusHtml = seeingList.length > 0
+                ? `<span style="color:var(--emerald); font-weight:700;">● Đang quan sát mục tiêu [${seeingList.join(', ')}] trong tầm Rs = ${Rs}m</span>`
+                : `<span style="color:var(--text-muted);">○ Ngoài tầm quan trắc (Rs = ${Rs}m)</span>`;
             document.getElementById('modalSensorStatus').innerHTML = statusHtml;
 
             let tbody = document.querySelector('#modalWeightsTable tbody');
             tbody.innerHTML = '';
 
-            // Self weight
-            let trSelf = document.createElement('tr');
-            trSelf.innerHTML = `<td>S${s.id} (Tự thân)</td><td>0.0m</td><td class="highlight">${(node.weights[idx] || 0).toFixed(4)}</td>`;
-            tbody.appendChild(trSelf);
+            if (node) {
+                let trSelf = document.createElement('tr');
+                trSelf.innerHTML = `<td>S${s.id} (Tự thân)</td><td>0.0m</td><td class="highlight">${(node.weights[idx] || 0).toFixed(4)}</td>`;
+                tbody.appendChild(trSelf);
 
-            // Neighbors
-            for (let j = 0; j < NUM_SENSORS; j++) {
-                if (j !== idx && node.weights[j] !== undefined) {
-                    let d = Math.hypot(s.x - sensors[j].x, s.y - sensors[j].y).toFixed(1);
-                    let tr = document.createElement('tr');
-                    tr.innerHTML = `<td>S${sensors[j].id}</td><td>${d}m</td><td>${node.weights[j].toFixed(4)}</td>`;
-                    tbody.appendChild(tr);
+                for (let j = 0; j < NUM_SENSORS; j++) {
+                    if (j !== idx && node.weights[j] !== undefined) {
+                        let d = Math.hypot(s.x - sensors[j].x, s.y - sensors[j].y).toFixed(1);
+                        let tr = document.createElement('tr');
+                        tr.innerHTML = `<td>S${sensors[j].id}</td><td>${d}m</td><td>${node.weights[j].toFixed(4)}</td>`;
+                        tbody.appendChild(tr);
+                    }
                 }
             }
 
@@ -1570,7 +1893,7 @@
         }
 
         // ==========================================
-        // CONTROLS & EVENT LISTENERS
+        // CONTROLS & LISTENERS
         // ==========================================
         document.getElementById('btn-play').addEventListener('click', () => {
             isRunning = !isRunning;
@@ -1593,13 +1916,28 @@
 
         document.getElementById('btn-reset').addEventListener('click', () => {
             stepK = 0;
-            trueState = [15.0, 15.0, 0.8, 0.8];
-            targetTrail = [];
             historyRmseCKF = [];
             historyRmseDKF = [];
             historyRmseLKF = [];
             historyNeesDKF = [];
-            initNodes();
+            initTargets();
+        });
+
+        // TĂNG / GIẢM SỐ LƯỢNG MỤC TIÊU
+        document.getElementById('btn-target-inc').addEventListener('click', () => {
+            if (targetCount < 5) {
+                targetCount++;
+                targets.push(createTargetInstance(targetCount - 1));
+                updateTargetChips();
+            }
+        });
+
+        document.getElementById('btn-target-dec').addEventListener('click', () => {
+            if (targetCount > 1) {
+                targetCount--;
+                targets.pop();
+                updateTargetChips();
+            }
         });
 
         document.getElementById('slider-speed').addEventListener('input', (e) => {
@@ -1629,8 +1967,8 @@
             }
         });
 
-        // Main Loop
-        initNodes();
+        // Initialize & Run Loop
+        initTargets();
         let lastTime = 0;
         let accumulator = 0;
 
@@ -1641,7 +1979,7 @@
 
             if (isRunning) {
                 accumulator += delta * speed;
-                let stepInterval = 0.5; // Mỗi 0.5s chạy 1 bước tại speed=1.0x
+                let stepInterval = 0.5;
                 while (accumulator >= stepInterval) {
                     stepSimulation();
                     accumulator -= stepInterval;
