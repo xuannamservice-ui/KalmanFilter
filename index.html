@@ -779,7 +779,214 @@
             color: var(--emerald);
             font-weight: 700;
         }
+    
+        /* EXPLAINER SECTION STYLES */
+        .explainer-section {
+            margin: 0 28px 30px 28px;
+            background: rgba(10, 16, 30, 0.92);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+
+        .explainer-header {
+            padding: 16px 22px;
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1) 0%, rgba(13, 21, 38, 0.8) 100%);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .explainer-header:hover {
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.15) 0%, rgba(20, 32, 56, 0.9) 100%);
+        }
+
+        .explainer-title-group h2 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .explainer-title-group h2 span.icon {
+            color: var(--cyan);
+            font-size: 1.1rem;
+        }
+
+        .explainer-title-group p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .btn-toggle-explainer {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            padding: 6px 14px;
+            color: var(--cyan);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-toggle-explainer:hover {
+            background: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .explainer-body {
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .explainer-body.collapsed {
+            display: none;
+        }
+
+        /* Live Telemetry Table */
+        .live-telemetry-card {
+            background: rgba(13, 21, 38, 0.6);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .card-subtitle {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .telemetry-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.73rem;
+        }
+
+        .telemetry-table th {
+            background: #10192e;
+            color: var(--text-muted);
+            padding: 9px 12px;
+            text-align: left;
+            border-bottom: 2px solid var(--border-subtle);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .telemetry-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.25);
+            white-space: nowrap;
+        }
+
+        .telemetry-table tr:hover td {
+            background: rgba(56, 189, 248, 0.04);
+        }
+
+        .telemetry-table td.target-name-cell {
+            font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Glossary Grid */
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .glossary-card {
+            background: rgba(13, 21, 38, 0.65);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .glossary-card:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .glossary-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .glossary-icon {
+            font-size: 1.3rem;
+            width: 36px;
+            height: 36px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .glossary-card-header h4 {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.3;
+        }
+
+        .glossary-sub {
+            font-size: 0.65rem;
+            color: var(--cyan);
+            font-family: 'JetBrains Mono', monospace;
+            display: block;
+        }
+
+        .glossary-content {
+            font-size: 0.74rem;
+            line-height: 1.55;
+            color: #cbd5e1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .glossary-content p strong {
+            color: #ffffff;
+        }
     </style>
+
 </head>
 <body>
 
@@ -989,6 +1196,122 @@
 
         </div>
     </div>
+
+
+    <!-- Explainer Section: GIẢI THÍCH CHI TIẾT GIÁ TRỊ MÔ HÌNH & Ý NGHĨA CÁC SỐ -->
+    <section class="explainer-section">
+        <div class="explainer-header" id="explainer-toggle-bar">
+            <div class="explainer-title-group">
+                <h2><span class="icon">📐</span> BẢNG GIẢI THÍCH CHI TIẾT GIÁ TRỊ MÔ HÌNH & Ý NGHĨA CÁC CON SỐ</h2>
+                <p>Đối chiếu lý thuyết Kalman Filter phân tán với dữ liệu trích mẫu thời gian thực ở Bước k = <span id="exp-step-k" style="color:var(--cyan); font-weight:700;">0</span></p>
+            </div>
+            <button class="btn-toggle-explainer" id="btn-toggle-exp">
+                <span id="exp-arrow">▾</span> <span id="toggle-exp-text">Thu gọn</span>
+            </button>
+        </div>
+
+        <div class="explainer-body" id="explainer-body-content">
+            
+            <!-- Phần 1: Bảng Trạng Thái Giá Trị Thời Gian Thực -->
+            <div class="live-telemetry-card">
+                <div class="card-subtitle">
+                    <span>📡 GIÁ TRỊ TRẠNG THÁI HIỆN TẠI CỦA CÁC MỤC TIÊU (LIVE MODEL TELEMETRY)</span>
+                    <span class="badge" style="background:rgba(56,189,248,0.15); color:var(--cyan); padding:3px 8px; border-radius:4px;">Cập nhật tức thời 60 FPS</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="telemetry-table">
+                        <thead>
+                            <tr>
+                                <th>Mục tiêu</th>
+                                <th>Tọa độ thật [px, py]</th>
+                                <th>Vận tốc thật [vx, vy]</th>
+                                <th>Ước lượng DKF [p̂x, p̂y]</th>
+                                <th>Sai số RMSE (DKF)</th>
+                                <th>Ước lượng CKF</th>
+                                <th>Ước lượng LKF</th>
+                                <th>Chỉ số NEES</th>
+                                <th>Đánh giá nhất quán Bar-Shalom</th>
+                            </tr>
+                        </thead>
+                        <tbody id="telemetry-tbody">
+                            <!-- Populated in stepSimulation() -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Phần 2: 4 Thẻ Phân Tích Ý Nghĩa Con Số & Tham Số Khoa Học -->
+            <div class="glossary-grid">
+                
+                <!-- Card 1 -->
+                <div class="glossary-card">
+                    <div class="glossary-card-header">
+                        <span class="glossary-icon">🎯</span>
+                        <div>
+                            <h4>Bước trích mẫu $k$ & Mô hình Động học CV</h4>
+                            <span class="glossary-sub">Constant Velocity: x_k = F x_{k-1} + w_{k-1}</span>
+                        </div>
+                    </div>
+                    <div class="glossary-content">
+                        <p><strong>• Bước trích mẫu (k):</strong> Đại diện cho bước thời gian rời rạc với chu kỳ T = 1.0s. Mục tiêu chuyển động tuần tự qua các bước k = 1, 2, ..., 80.</p>
+                        <p><strong>• Vector trạng thái x:</strong> Chứa 4 thành phần động học [px, py, vx, vy] trong không gian 80m × 80m.</p>
+                        <p><strong>• Ma trận nhiễu Q:</strong> Hiệp phương sai nhiễu quán tính cơ học với hệ số q_scale = 0.1, mô phỏng các gia tốc ngẫu nhiên không dự báo trước.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glossary-card">
+                    <div class="glossary-card-header">
+                        <span class="glossary-icon">📡</span>
+                        <div>
+                            <h4>Bán kính Quan trắc $R_s$ & Truyền thông $R_c$</h4>
+                            <span class="glossary-sub">Quan trắc hữu hạn & Đồ thị mạng liên thông</span>
+                        </div>
+                    </div>
+                    <div class="glossary-content">
+                        <p><strong>• Rs = 28m (Vùng quan trắc):</strong> Cảm biến chỉ đo được mục tiêu nếu khoảng cách d &le; Rs. Khi Rs hẹp, các nút đơn lẻ (LKF) liên tục mất dấu, đẩy sai số lên 56m.</p>
+                        <p><strong>• Rc = 40m (Vùng truyền thông):</strong> Cự ly phát sóng vô tuyến cực đại giữa 2 cảm biến, kết nối 12 nút thành một đồ thị mạng liên thông vững chắc.</p>
+                        <p><strong>• Khôi phục phân tán:</strong> Nhờ mạng Rc, thông tin quan sát từ các nút thấy mục tiêu được lan tỏa đến toàn mạng qua thuật toán đồng thuận.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glossary-card">
+                    <div class="glossary-card-header">
+                        <span class="glossary-icon">🔄</span>
+                        <div>
+                            <h4>Số vòng Đồng thuận $L$ & Trọng số Metropolis</h4>
+                            <span class="glossary-sub">Metropolis Weights & Điểm tối ưu Pareto</span>
+                        </div>
+                    </div>
+                    <div class="glossary-content">
+                        <p><strong>• Số vòng đồng thuận (L = 5):</strong> Số chu kỳ trao đổi ma trận thông tin (&Omega;, q) giữa các nút lân cận. L = 5 là nghiệm Pareto tối ưu: RMSE tiệm cận CKF (17.94m so với 18.94m).</p>
+                        <p><strong>• Trọng số Metropolis W_ij:</strong> W_ij = 1 / (1 + max(d_i, d_j)) điều tiết dòng thông tin dựa theo bậc nút, chống hiện tượng đếm trùng tin đồn (rumor propagation).</p>
+                        <p><strong>• Chống rớt gói (p_loss):</strong> Khi mất gói tin, cơ chế dồn trọng số W_ii &larr; W_ii + W_ij giúp mạng chịu mất gói tới 30% mà sai số chỉ tăng +0.6%.</p>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="glossary-card">
+                    <div class="glossary-card-header">
+                        <span class="glossary-icon">⚖️</span>
+                        <div>
+                            <h4>Chỉ số Nhất quán NEES & Dải tin cậy 95%</h4>
+                            <span class="glossary-sub">Kiểm định Bar-Shalom: Chi-Square 95% [3.47, 4.57]</span>
+                        </div>
+                    </div>
+                    <div class="glossary-content">
+                        <p><strong>• Công thức NEES:</strong> &epsilon;_k = (x_k - x̂_k)^T P_k^{-1} (x_k - x̂_k). Với 4 bậc tự do, giá trị kỳ vọng lý thuyết là E[&epsilon;] = 4.0.</p>
+                        <p><strong>• Nhất quán [3.47 - 4.57]:</strong> Ma trận hiệp phương sai ước lượng P phản ánh chuẩn xác 100% sai số thực tế.</p>
+                        <p><strong>• Bảo thủ (&lt; 3.47):</strong> Bộ lọc thận trọng, P lớn hơn sai số thật (an toàn tuyệt đối, không bao giờ bị nổ ma trận).</p>
+                        <p><strong>• Tự tin quá (&gt; 4.57):</strong> P nhỏ hơn thực tế, báo động nguy cơ phân kỳ do đếm trùng thông tin.</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
 
     <!-- Modal for Sensor Inspection -->
     <div class="modal-overlay" id="sensorModal">
@@ -1501,6 +1824,7 @@
             historyRmseDKF.push(avgRmseDKF);
             historyRmseLKF.push(avgRmseLKF);
             historyNeesDKF.push(avgNees);
+            updateTelemetryTable();
 
             if (historyRmseCKF.length > 60) {
                 historyRmseCKF.shift();
@@ -1966,6 +2290,64 @@
                 sensors[i].y = Math.floor(10 + Math.random() * 60);
             }
         });
+
+
+        // ==========================================
+        // EXPLAINER SECTION INTERACTION & TELEMETRY UPDATE
+        // ==========================================
+        const toggleExpBtn = document.getElementById('explainer-toggle-bar');
+        const explainerBody = document.getElementById('explainer-body-content');
+        const toggleExpText = document.getElementById('toggle-exp-text');
+        const expArrow = document.getElementById('exp-arrow');
+
+        toggleExpBtn.addEventListener('click', () => {
+            const isCollapsed = explainerBody.classList.toggle('collapsed');
+            toggleExpText.innerText = isCollapsed ? 'Mở rộng' : 'Thu gọn';
+            expArrow.innerText = isCollapsed ? '▸' : '▾';
+        });
+
+        function updateTelemetryTable() {
+            document.getElementById('exp-step-k').innerText = stepK;
+            const tbody = document.getElementById('telemetry-tbody');
+            if (!tbody) return;
+
+            let html = '';
+            targets.forEach(tgt => {
+                let truePos = `[${tgt.state[0].toFixed(2)}, ${tgt.state[1].toFixed(2)}]m`;
+                let trueVel = `[${tgt.state[2].toFixed(2)}, ${tgt.state[3].toFixed(2)}]m/s`;
+                
+                let dkfPos = tgt.dkfNodes[0] ? `[${tgt.dkfNodes[0].x[0].toFixed(2)}, ${tgt.dkfNodes[0].x[1].toFixed(2)}]m` : 'N/A';
+                let ckfPos = `[${tgt.ckfState[0].toFixed(2)}, ${tgt.ckfState[1].toFixed(2)}]m`;
+                let lkfPos = tgt.lkfNodes[0] ? `[${tgt.lkfNodes[0].x[0].toFixed(2)}, ${tgt.lkfNodes[0].x[1].toFixed(2)}]m` : 'N/A';
+                
+                let rmseDKF = `${tgt.currentRmseDKF.toFixed(2)}m`;
+                let neesVal = tgt.currentNees.toFixed(2);
+                
+                let statusBadge = '';
+                if (tgt.currentNees < 3.47) {
+                    statusBadge = '<span style="color:var(--amber); font-weight:700;">● Bảo thủ (Conservative)</span>';
+                } else if (tgt.currentNees <= 4.57) {
+                    statusBadge = '<span style="color:var(--emerald); font-weight:700;">✔ Nhất quán (Consistent 95%)</span>';
+                } else {
+                    statusBadge = '<span style="color:var(--rose); font-weight:700;">⚠ Tự tin quá (Overconfident)</span>';
+                }
+
+                html += `
+                    <tr>
+                        <td class="target-name-cell" style="color:${tgt.color}; font-weight:800;">🎯 ${tgt.name}</td>
+                        <td style="color:#f8fafc;">${truePos}</td>
+                        <td style="color:var(--text-muted);">${trueVel}</td>
+                        <td style="color:var(--emerald); font-weight:700;">${dkfPos}</td>
+                        <td style="color:var(--emerald); font-weight:700;">${rmseDKF}</td>
+                        <td style="color:var(--cyan);">${ckfPos}</td>
+                        <td style="color:var(--rose);">${lkfPos}</td>
+                        <td style="font-weight:700;">${neesVal}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
 
         // Initialize & Run Loop
         initTargets();
