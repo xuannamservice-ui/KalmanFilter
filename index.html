@@ -1527,12 +1527,7 @@
                 currentRmseDKF: 0,
                 currentRmseCKF: 0,
                 currentRmseLKF: 0,
-                currentNees: 3.92,
-                // Smooth sub-frame render states for 60/120 FPS fluid motion
-                renderState: [pos[0], pos[1]],
-                renderCkf: [pos[0], pos[1]],
-                renderDkf: [pos[0], pos[1]],
-                renderLkf: [pos[0], pos[1]]
+                currentNees: 3.92
             };
         }
 
@@ -1864,92 +1859,42 @@
         }
 
         // ==========================================
-        // HIGH PERFORMANCE RETINA CANVAS RENDERING (60-120 FPS)
+        // RETINA CANVAS RENDERING
         // ==========================================
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
-        const chartRmseCanvas = document.getElementById('chartRmse');
-        const chartRmseCtx = chartRmseCanvas.getContext('2d');
-        const chartNeesCanvas = document.getElementById('chartNees');
-        const chartNeesCtx = chartNeesCanvas.getContext('2d');
 
-        let canvasW = 900, canvasH = 560;
-        let chartRmseW = 380, chartRmseH = 110;
-        let chartNeesW = 380, chartNeesH = 110;
-
-        function resizeAllCanvases() {
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-
-            // Main Sim Canvas
-            const r1 = canvas.getBoundingClientRect();
-            if (r1.width > 0) {
-                canvasW = r1.width;
-                canvasH = r1.height;
-                canvas.width = r1.width * dpr;
-                canvas.height = r1.height * dpr;
-                ctx.resetTransform();
-                ctx.scale(dpr, dpr);
-            }
-
-            // RMSE Chart
-            const r2 = chartRmseCanvas.getBoundingClientRect();
-            if (r2.width > 0) {
-                chartRmseW = r2.width;
-                chartRmseH = r2.height;
-                chartRmseCanvas.width = r2.width * dpr;
-                chartRmseCanvas.height = r2.height * dpr;
-                chartRmseCtx.resetTransform();
-                chartRmseCtx.scale(dpr, dpr);
-            }
-
-            // NEES Chart
-            const r3 = chartNeesCanvas.getBoundingClientRect();
-            if (r3.width > 0) {
-                chartNeesW = r3.width;
-                chartNeesH = r3.height;
-                chartNeesCanvas.width = r3.width * dpr;
-                chartNeesCanvas.height = r3.height * dpr;
-                chartNeesCtx.resetTransform();
-                chartNeesCtx.scale(dpr, dpr);
-            }
-
-            drawRmseChart();
-            drawNeesChart();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.resetTransform();
+            ctx.scale(dpr, dpr);
         }
+        window.addEventListener('resize', resizeCanvas);
+        setTimeout(resizeCanvas, 50);
 
-        window.addEventListener('resize', resizeAllCanvases);
-        setTimeout(resizeAllCanvases, 50);
-
-        function toCanvasX(x) { return (x / FIELD_SIZE) * canvasW; }
-        function toCanvasY(y) { return (y / FIELD_SIZE) * canvasH; }
-        function toCanvasDist(d) { return (d / FIELD_SIZE) * ((canvasW + canvasH) / 2); }
+        function toCanvasX(x) { 
+            const rect = canvas.getBoundingClientRect();
+            return (x / FIELD_SIZE) * rect.width; 
+        }
+        function toCanvasY(y) { 
+            const rect = canvas.getBoundingClientRect();
+            return (y / FIELD_SIZE) * rect.height; 
+        }
+        function toCanvasDist(d) { 
+            const rect = canvas.getBoundingClientRect();
+            return (d / FIELD_SIZE) * ((rect.width + rect.height) / 2); 
+        }
 
         let radarAngle = 0;
 
-        function renderCanvas(delta) {
-            ctx.clearRect(0, 0, canvasW, canvasH);
+        function renderCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            ctx.clearRect(0, 0, rect.width, rect.height);
 
-            radarAngle += delta * 1.8 * speed;
-
-            // Smooth 60/120 FPS Sub-frame interpolation for all targets and estimators
-            const lerpSpeed = Math.min(1.0, delta * 12.0 * speed);
-            targets.forEach(tgt => {
-                tgt.renderState[0] += (tgt.state[0] - tgt.renderState[0]) * lerpSpeed;
-                tgt.renderState[1] += (tgt.state[1] - tgt.renderState[1]) * lerpSpeed;
-
-                tgt.renderCkf[0] += (tgt.ckfState[0] - tgt.renderCkf[0]) * lerpSpeed;
-                tgt.renderCkf[1] += (tgt.ckfState[1] - tgt.renderCkf[1]) * lerpSpeed;
-
-                let dkfX = tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[0] : tgt.state[0];
-                let dkfY = tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[1] : tgt.state[1];
-                tgt.renderDkf[0] += (dkfX - tgt.renderDkf[0]) * lerpSpeed;
-                tgt.renderDkf[1] += (dkfY - tgt.renderDkf[1]) * lerpSpeed;
-
-                let lkfX = tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[0] : tgt.state[0];
-                let lkfY = tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[1] : tgt.state[1];
-                tgt.renderLkf[0] += (lkfX - tgt.renderLkf[0]) * lerpSpeed;
-                tgt.renderLkf[1] += (lkfY - tgt.renderLkf[1]) * lerpSpeed;
-            });
+            radarAngle += 0.03 * speed;
 
             // 1. Grid
             ctx.strokeStyle = 'rgba(30, 41, 59, 0.45)';
@@ -2010,7 +1955,7 @@
                         ctx.save();
                         ctx.beginPath();
                         ctx.moveTo(toCanvasX(sensors[idx].x), toCanvasY(sensors[idx].y));
-                        ctx.lineTo(toCanvasX(tgt.renderState[0]), toCanvasY(tgt.renderState[1]));
+                        ctx.lineTo(toCanvasX(tgt.state[0]), toCanvasY(tgt.state[1]));
                         ctx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
                         ctx.lineWidth = 1.2;
                         ctx.setLineDash([4, 4]);
@@ -2037,8 +1982,8 @@
                 }
 
                 // Target True Point (Glowing)
-                let tx = toCanvasX(tgt.renderState[0]);
-                let ty = toCanvasY(tgt.renderState[1]);
+                let tx = toCanvasX(tgt.state[0]);
+                let ty = toCanvasY(tgt.state[1]);
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(tx, ty, 8, 0, Math.PI * 2);
@@ -2060,8 +2005,8 @@
 
                 // Estimations for this target
                 // CKF (Cyan)
-                let ckfX = toCanvasX(tgt.renderCkf[0]);
-                let ckfY = toCanvasY(tgt.renderCkf[1]);
+                let ckfX = toCanvasX(tgt.ckfState[0]);
+                let ckfY = toCanvasY(tgt.ckfState[1]);
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(ckfX, ckfY, 6, 0, Math.PI * 2);
@@ -2072,8 +2017,8 @@
                 ctx.restore();
 
                 // DKF Mean (Emerald)
-                let dkfX = toCanvasX(tgt.renderDkf[0]);
-                let dkfY = toCanvasY(tgt.renderDkf[1]);
+                let dkfX = toCanvasX(tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[0] : 15);
+                let dkfY = toCanvasY(tgt.dkfNodes[0] ? tgt.dkfNodes[0].x[1] : 15);
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(dkfX, dkfY, 6, 0, Math.PI * 2);
@@ -2084,8 +2029,8 @@
                 ctx.restore();
 
                 // LKF Reference (Coral/Red)
-                let lkfX = toCanvasX(tgt.renderLkf[0]);
-                let lkfY = toCanvasY(tgt.renderLkf[1]);
+                let lkfX = toCanvasX(tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[0] : 15);
+                let lkfY = toCanvasY(tgt.lkfNodes[0] ? tgt.lkfNodes[0].x[1] : 15);
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(lkfX, lkfY, 4.5, 0, Math.PI * 2);
@@ -2132,16 +2077,27 @@
         }
 
         // ==========================================
-        // SMOOTH CHART RENDERING
+        // CHART RENDERING (RETINA CANVAS)
         // ==========================================
+        function resizeChartCanvas(id) {
+            let c = document.getElementById(id);
+            let rect = c.getBoundingClientRect();
+            let dpr = window.devicePixelRatio || 1;
+            c.width = rect.width * dpr;
+            c.height = rect.height * dpr;
+            let g = c.getContext('2d');
+            g.resetTransform();
+            g.scale(dpr, dpr);
+            return { g, w: rect.width, h: rect.height };
+        }
+
         function drawRmseChart() {
-            const g = chartRmseCtx;
-            const w = chartRmseW, h = chartRmseH;
+            let { g, w, h } = resizeChartCanvas('chartRmse');
             g.clearRect(0, 0, w, h);
             let maxY = 120.0;
 
             // Grid lines
-            g.strokeStyle = 'rgba(30, 41, 59, 0.6)';
+            g.strokeStyle = '#1e293b';
             g.lineWidth = 1;
             g.font = '9px monospace';
             g.fillStyle = '#475569';
@@ -2178,8 +2134,7 @@
         }
 
         function drawNeesChart() {
-            const g = chartNeesCtx;
-            const w = chartNeesW, h = chartNeesH;
+            let { g, w, h } = resizeChartCanvas('chartNees');
             g.clearRect(0, 0, w, h);
             let maxY = 10.0;
 
@@ -2421,28 +2376,21 @@
 
         function mainLoop(timestamp) {
             if (!lastTime) lastTime = timestamp;
-            let delta = Math.min(0.1, (timestamp - lastTime) / 1000);
+            let delta = (timestamp - lastTime) / 1000;
             lastTime = timestamp;
 
-            let didStep = false;
             if (isRunning) {
                 accumulator += delta * speed;
-                let stepInterval = 0.5; // Physics simulation step interval
+                let stepInterval = 0.5;
                 while (accumulator >= stepInterval) {
                     stepSimulation();
                     accumulator -= stepInterval;
-                    didStep = true;
                 }
             }
 
-            // Continuous 60/120 FPS buttery smooth interpolation rendering
-            renderCanvas(delta);
-
-            // Re-render chart curves only when step changes
-            if (didStep) {
-                drawRmseChart();
-                drawNeesChart();
-            }
+            renderCanvas();
+            drawRmseChart();
+            drawNeesChart();
 
             requestAnimationFrame(mainLoop);
         }
