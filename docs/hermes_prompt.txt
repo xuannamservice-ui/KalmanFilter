@@ -1,0 +1,71 @@
+Bạn là Hermes Agent, chuyên gia hàng đầu về Xử lý tín hiệu số, Lý thuyết Ước lượng (Kalman Filter) và Mạng cảm biến không dây (WSN).
+
+### BỐI CẢNH & NHIỆM VỤ:
+Bạn được giao nhiệm vụ triển khai, chạy mô phỏng thực nghiệm và lập báo cáo nghiên cứu hoàn chỉnh nhằm **chứng minh các phương hướng và giả thuyết khoa học** trong đề tài:
+"BỘ LỌC KALMAN PHÂN TÁN CHO MẠNG CẢM BIẾN KHÔNG DÂY THEO DÕI MỤC TIÊU (DKF IN WSN)"
+
+### CÁC MỤC TIÊU KHOA HỌC CẦN CHỨNG MINH (RESEARCH HYPOTHESES):
+1. **Luận điểm 1 (Sự cần thiết của Ước lượng phân tán):** Khi tầm quan trắc của cảm biến hẹp (Rs = 28m), bộ lọc cục bộ (LKF) sẽ phân kỳ hoặc có sai số lớn gấp > 5 lần bộ lọc tập trung (CKF), do từng nút đơn lẻ không quan sát đủ trạng thái và bị mất dấu mục tiêu. Ngược lại, bộ lọc phân tán (DKF) vẫn duy trì bám vết ổn định.
+2. **Luận điểm 2 (Hiệu quả đồng thuận & Đánh đổi chi phí):** Khi số vòng đồng thuận L tăng (L in [1, 2, 3, 5, 10]), sai số ước lượng của DKF tiệm cận dần về cận tối ưu của CKF, nhưng chi phí truyền thông tăng tuyến tính (L * d_avg * 112 bytes/chu kỳ).
+3. **Luận điểm 3 (Tính nhất quán & Chống đếm trùng thông tin):** Nhờ cơ chế Covariance Intersection trên miền thông tin kết hợp trọng số Metropolis ngẫu nhiên kép, bộ lọc DKF không bị hiện tượng "đếm trùng thông tin" (rumor propagation) làm tự tin quá mức (overconfident). Kiểm định NEES trung bình phải nằm gọn trong khoảng tin cậy 95% [3.47, 4.57] ở ít nhất 90% số bước sau khi hội tụ.
+4. **Luận điểm 4 (Tính bền vững khi mất gói - Packet Loss):** Trong điều kiện kênh truyền thực tế có tỷ lệ mất gói p_loss in [0%, 10%, 20%, 30%], cơ chế dồn trọng số Metropolis W_ii <- W_ii + W_ij giúp DKF vẫn hoạt động ổn định và giảm thiểu suy thoái chất lượng bám vết.
+
+---
+
+### QUY CHUẨN THÔNG SỐ VÀ MÔ HÌNH TOÁN HỌC BẮT BUỘC:
+1. **Không gian trạng thái:**
+   - Trạng thái 2D: x_k = [p_x, p_y, v_x, v_y]^T, chu kỳ trích mẫu T = 1s.
+   - Mô hình chuyển động vận tốc không đổi (Constant Velocity):
+     x_k = F * x_{k-1} + w_{k-1}, w_{k-1} ~ N(0, Q)
+     F = [[1, 0, T, 0], [0, 1, 0, T], [0, 0, 1, 0], [0, 0, 0, 1]]
+     Q = q_scale * [[T^3/3, 0, T^2/2, 0], [0, T^3/3, 0, T^2/2], [T^2/2, 0, T, 0], [0, T^2/2, 0, T]] (với q_scale = 0.1)
+
+2. **Mô hình quan trắc & Cảm biến:**
+   - Vùng mô phỏng 80m x 80m. Số nút cảm biến N = 12 nút cố định ngẫu nhiên (đảm bảo đồ thị liên thông với Rc = 40m).
+   - Mỗi nút chỉ đo trực tiếp vị trí: z_{i,k} = H * x_k + v_{i,k}, v_{i,k} ~ N(0, R_i), R_i = diag(sigma_r^2, sigma_r^2) với sigma_r = 1.0m.
+   - H = [[1, 0, 0, 0], [0, 1, 0, 0]]
+   - Điều kiện quan trắc hữu hạn: gamma_{i,k} = 1 nếu khoảng cách Euclid từ nút i tới mục tiêu <= Rs, ngược lại gamma_{i,k} = 0.
+
+3. **Mô hình mạng & Trọng số Metropolis:**
+   - Hai nút i, j là láng giềng nếu d(s_i, s_j) <= Rc = 40m.
+   - Trọng số Metropolis cho láng giềng j in N_i: W_{ij} = 1 / (1 + max(d_i, d_j))
+   - Trọng số tự thân: W_{ii} = 1 - sum_{j in N_i} W_{ij}
+
+4. **Ba thuật toán đối chứng (dùng chung chính xác tập dữ liệu đầu vào cho mỗi run):**
+   - **Centralized KF (CKF):** Gom toàn bộ phép đo của các nút có gamma_{i,k} = 1 tại mỗi bước k về nút trung tâm để cập nhật KF chuẩn.
+   - **Local KF (LKF):** Mỗi nút tự cập nhật chỉ với phép đo của mình (nếu gamma_{i,k} = 1, nếu = 0 chỉ dự báo), hoàn toàn không giao tiếp.
+   - **Distributed KF (DKF):**
+     * Dự báo: P_{i,k|k-1} = F * P_{i,k-1} * F^T + Q; Omega_{i,k|k-1} = inv(P); q_{i,k|k-1} = Omega * x_hat.
+     * Cập nhật cục bộ: Omega_{i,k}^{(0)} = Omega_{i,k|k-1} + gamma_{i,k} * H^T * inv(R_i) * H; q_{i,k}^{(0)} = q_{i,k|k-1} + gamma_{i,k} * H^T * inv(R_i) * z_{i,k}.
+     * Đồng thuận L vòng:
+       Omega_{i,k}^{(l)} = sum_{j in N_i U {i}} W_{ij} * Omega_{j,k}^{(l-1)}
+       q_{i,k}^{(l)} = sum_{j in N_i U {i}} W_{ij} * q_{j,k}^{(l-1)}
+     * Khôi phục: P_{i,k|k} = inv(Omega_{i,k}^{(L)}); x_hat_{i,k|k} = P_{i,k|k} * q_{i,k}^{(L)}.
+
+5. **Kịch bản chạy thực nghiệm Monte Carlo:**
+   - K = 80 bước thời gian cho mỗi trajectory.
+   - M = 100 lần chạy Monte Carlo với danh sách 100 seeds ngẫu nhiên cố định (để đảm bảo khả năng tái lập 100%).
+   - **Kịch bản 1 (KB1):** Quét Rs in {60m, 28m} và L in {1, 2, 3, 5, 10} (10 cấu hình x 3 thuật toán x 100 runs).
+   - **Kịch bản 2 (KB2):** Cố định Rs = 28m, L = 5, quét p_loss in {0%, 10%, 20%, 30%}. Khi mất gói từ láng giềng j, thực hiện dồn trọng số: W_{ii} <- W_{ii} + W_{ij}.
+
+---
+
+### HÀNH ĐỘNG CỤ THỂ BẠN CẦN THỰC HIỆN TRÊN MÔI TRƯỜNG NÀY:
+1. Tạo thư mục làm việc (ví dụ: `DKF_WSN_Experiment/`).
+2. Viết mã nguồn Python mô phỏng module hóa rõ ràng, tối ưu hóa tính toán số học (đối xứng hóa ma trận, sử dụng `np.linalg.solve` để tránh suy biến ma trận).
+3. Chạy toàn bộ các kịch bản thực nghiệm Monte Carlo 100 lần (có thanh tiến trình hoặc log rõ ràng).
+4. Tính toán các chỉ số:
+   - RMSE vị trí trung bình theo thời gian và trung bình tổng thể.
+   - NEES trung bình tại mỗi bước và tỷ lệ % số bước nằm trong khoảng [3.47, 4.57].
+   - Bảng chi phí truyền thông (bytes/chu kỳ).
+5. Xuất các đồ thị phân tích chất lượng cao (.png):
+   - Quỹ đạo mục tiêu và phân bố mạng cảm biến.
+   - Đường cong RMSE theo thời gian so sánh CKF, LKF, và DKF với các giá trị L khác nhau.
+   - Đường cong NEES so sánh với 2 ngưỡng tin cậy 95% (3.47 và 4.57).
+   - Biểu đồ ảnh hưởng của tỷ lệ rớt gói tin (Packet loss).
+6. Lập Báo cáo Khoa học chi tiết bằng tiếng Việt (`REPORT_DKF_WSN.md`):
+   - Đưa ra các bảng số liệu thực nghiệm định lượng rõ ràng.
+   - Trả lời cụ thể 3 câu hỏi nghiên cứu (RQ1, RQ2, RQ3).
+   - Đối chiếu trực tiếp với 3 tiêu chí nghiệm thu đề ra trong slide.
+
+Hãy tiến hành thực hiện ngay từ bước tạo mã nguồn, chạy mô phỏng và xuất báo cáo nghiệm thu hoàn chỉnh!

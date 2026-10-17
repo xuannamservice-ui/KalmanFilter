@@ -1,0 +1,9 @@
+{
+  "optimized_covariance_scale": 0.7,
+  "target_nees_range": [
+    3.47,
+    4.57
+  ],
+  "actual_optimized_avg_nees": 3.9254872424283485,
+  "improvement_notes": "Adjusting process noise covariance Q scales filter confidence directly. A smaller Q makes the filter rely more on prediction, which decreases NEES if predictions are accurate."
+}
