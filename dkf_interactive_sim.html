@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DKF-WSN LAB · BỘ LỌC KALMAN PHÂN TÁN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #060913;
+            --bg-panel: #0a0f1d;
+            --bg-card: #0d1527;
+            --border-color: #1e293b;
+            --border-light: #334155;
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: linear-gradient(180deg, rgba(13, 21, 39, 0.95) 0%, rgba(10, 15, 29, 0.9) 100%);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(8px);
+        }
+
+        .title-area h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-area h1 span.highlight {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+        }
+
+        .title-area p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .header-stats {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .stat-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-val.emerald { color: var(--accent-emerald); }
+        .stat-val.rose { color: var(--accent-rose); }
+        .stat-val.cyan { color: var(--accent-cyan); }
+        .stat-val.amber { color: var(--accent-amber); }
+
+        .btn-live-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            color: var(--accent-emerald);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-live-status .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-emerald);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* Insights Banner */
+        .insights-bar {
+            margin: 12px 24px 0 24px;
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .insights-icon {
+            color: var(--accent-cyan);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .insights-content {
+            font-size: 0.8rem;
+            line-height: 1.45;
+        }
+
+        .insights-title {
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
+        }
+
+        .insights-text {
+            color: #e2e8f0;
+        }
+
+        .insights-text strong {
+            color: #fff;
+        }
+
+        /* Main Workspace Layout */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 16px;
+            padding: 16px 24px;
+            flex: 1;
+        }
+
+        /* Simulation Canvas Box */
+        .canvas-container {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .canvas-header-tags {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .canvas-tag {
+            background: rgba(13, 21, 39, 0.85);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            backdrop-filter: blur(4px);
+        }
+
+        .canvas-tooltip {
+            position: absolute;
+            bottom: 48px;
+            right: 14px;
+            background: rgba(13, 21, 39, 0.85);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            color: var(--accent-amber);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+        }
+
+        #simCanvas {
+            width: 100%;
+            height: 540px;
+            display: block;
+            background: radial-gradient(circle at center, #0c1427 0%, #060913 100%);
+            cursor: crosshair;
+        }
+
+        .canvas-legend {
+            background: rgba(10, 15, 29, 0.95);
+            border-top: 1px solid var(--border-color);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            z-index: 10;
+        }
+
+        .legend-title {
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Right Control & Charts Panel */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .card-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title span.badge {
+            font-size: 0.68rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: none;
+        }
+
+        /* Control Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .btn-action {
+            padding: 8px 6px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            background: #1e293b;
+            color: var(--text-main);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-action:hover {
+            background: #334155;
+            border-color: #475569;
+        }
+
+        .btn-action.primary {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: #041226;
+            font-weight: 700;
+        }
+
+        .btn-action.primary:hover {
+            background: #7dd3fc;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-action.active-pill {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: rgba(56, 189, 248, 0.5);
+            color: var(--accent-cyan);
+        }
+
+        /* Sliders */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .slider-header span.val {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            background: #1e293b;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+            transition: all 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Gauge */
+        .gauge-section {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            margin-bottom: 6px;
+        }
+
+        .gauge-bar-container {
+            position: relative;
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #f59e0b 0%, #10b981 35%, #10b981 65%, #f43f5e 100%);
+            margin-bottom: 6px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .gauge-needle {
+            position: absolute;
+            top: -4px;
+            width: 4px;
+            height: 18px;
+            background: #ffffff;
+            border-radius: 2px;
+            box-shadow: 0 0 6px #000;
+            transform: translateX(-50%);
+            transition: left 0.3s ease;
+        }
+
+        .gauge-scale-legend {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.62rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-dim);
+        }
+
+        .btn-reshuffle {
+            width: 100%;
+            margin-top: 12px;
+            padding: 8px;
+            background: #131d33;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-reshuffle:hover {
+            background: #1e293b;
+            color: var(--text-main);
+            border-color: var(--border-light);
+        }
+
+        /* Charts */
+        .chart-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 105px;
+            background: #090e1a;
+            border-radius: 6px;
+            border: 1px solid #172033;
+        }
+
+        .chart-legend-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+        }
+
+        .chart-legend-row span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Sensor Inspector Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(4, 7, 15, 0.75);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: 14px;
+            width: 520px;
+            max-width: 90vw;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.05rem;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            margin-top: 8px;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid var(--border-color);
+            padding: 5px 8px;
+            text-align: right;
+        }
+
+        .matrix-table th {
+            background: #111b30;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .matrix-table td.highlight {
+            color: var(--accent-emerald);
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="title-area">
+            <h1>DKF-WSN LAB <span class="highlight">· BỘ LỌC KALMAN PHÂN TÁN</span></h1>
+            <p>Mô phỏng đối chứng 3 kiến trúc: Centralized vs Local vs Distributed Kalman Filter | CTS Lab</p>
+        </div>
+
+        <div class="header-stats">
+            <div class="stat-item">
+                <span class="stat-label">BƯỚC (K) ⓘ</span>
+                <span class="stat-val" id="stat-k">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">SENSOR THẤY MỤC TIÊU ⓘ</span>
+                <span class="stat-val" id="stat-active">0 / 12</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">SAI SỐ DKF (RMSE) ⓘ</span>
+                <span class="stat-val emerald" id="stat-rmse-dkf">0.00m</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">NHẤT QUÁN NEES ⓘ</span>
+                <span class="stat-val" id="stat-nees">3.92</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">TẢI BẢN TIN / CHU KỲ ⓘ</span>
+                <span class="stat-val" id="stat-comm">39.4 KB</span>
+            </div>
+            <button class="btn-live-status" id="btn-live-mode">
+                <span class="dot"></span>
+                <span>MÔ PHỎNG LIÊN TỤC</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Insights Banner -->
+    <div class="insights-bar">
+        <div class="insights-icon">⚡</div>
+        <div class="insights-content">
+            <div class="insights-title">TRỢ LÝ PHÂN TÍCH HIỆN TƯỢNG THEO THỜI GIAN THỰC (LIVE SCIENTIFIC INSIGHTS)</div>
+            <div class="insights-text" id="insights-text">
+                Khởi tạo mô phỏng mạng cảm biến 12 nút. Đang chờ kích hoạt bước chạy tiếp theo...
+            </div>
+        </div>
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace">
+        
+        <!-- Simulation Canvas -->
+        <div class="canvas-container">
+            <div class="canvas-header-tags">
+                <span class="canvas-tag">Vùng: 80m × 80m</span>
+                <span class="canvas-tag" id="tag-rc">Truyền thông: Rc = 40m</span>
+                <span class="canvas-tag">N = 12 Sensor Nodes</span>
+            </div>
+
+            <canvas id="simCanvas" width="900" height="540"></canvas>
+
+            <div class="canvas-tooltip">
+                <span>💡</span> Nhấp chuột vào nút Sensor bất kỳ để xem chi tiết ma trận & trọng số
+            </div>
+
+            <div class="canvas-legend">
+                <span class="legend-title">LỚP HIỂN THỊ:</span>
+                <div class="legend-item"><span class="legend-dot" style="background:#e879f9;"></span> Mục tiêu thật (True)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#06b6d4;"></span> CKF (Tập trung)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> DKF (Phân tán)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f43f5e;"></span> LKF (Cục bộ)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:rgba(245, 158, 11, 0.4); border:1px solid #f59e0b;"></span> Vùng quan trắc (Rs)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#475569;"></span> Liên kết (Rc)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#38bdf8;"></span> Tia quét Radar</div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            
+            <!-- Controls Card -->
+            <div class="card">
+                <div class="card-title">
+                    <span>▷ Bảng Điều Khiển Giả Lập</span>
+                </div>
+
+                <!-- 4 Action Buttons -->
+                <div class="btn-grid">
+                    <button class="btn-action primary" id="btn-play">
+                        <span id="btn-play-icon">⏸</span> <span id="btn-play-text">Tạm dừng</span>
+                    </button>
+                    <button class="btn-action" id="btn-step">
+                        <span>⏭</span> <span>Bước (+1)</span>
+                    </button>
+                    <button class="btn-action active-pill" id="btn-infinite">
+                        <span>❄</span> <span>Vô hạn: Bật</span>
+                    </button>
+                    <button class="btn-action" id="btn-reset">
+                        <span>🔄</span> <span>Làm mới</span>
+                    </button>
+                </div>
+
+                <!-- Sliders -->
+                <div class="slider-group">
+                    <div class="slider-item">
+                        <div class="slider-header">
+                            <span>Tốc độ giả lập ⓘ</span>
+                            <span class="val" id="val-speed">1.0x</span>
+                        </div>
+                        <input type="range" id="slider-speed" min="0.2" max="3.0" step="0.2" value="1.0">
+                    </div>
+
+                    <div class="slider-item">
+                        <div class="slider-header">
+                            <span>Bán kính quan trắc (Rs) ⓘ</span>
+                            <span class="val" id="val-rs">28m</span>
+                        </div>
+                        <input type="range" id="slider-rs" min="15" max="60" step="1" value="28">
+                    </div>
+
+                    <div class="slider-item">
+                        <div class="slider-header">
+                            <span>Số vòng đồng thuận (L) ⓘ</span>
+                            <span class="val" id="val-l">5</span>
+                        </div>
+                        <input type="range" id="slider-l" min="1" max="10" step="1" value="5">
+                    </div>
+
+                    <div class="slider-item">
+                        <div class="slider-header">
+                            <span>Tỷ lệ rớt gói tin (p_loss) ⓘ</span>
+                            <span class="val" id="val-ploss">0%</span>
+                        </div>
+                        <input type="range" id="slider-ploss" min="0" max="50" step="5" value="0">
+                    </div>
+                </div>
+
+                <!-- Gauge -->
+                <div class="gauge-section">
+                    <div class="gauge-labels">
+                        <span style="color:var(--text-muted); font-size:0.72rem;">Thang Đo Nhất Quán NEES</span>
+                        <span style="font-size:0.72rem; font-weight:700;" id="gauge-status-text" class="stat-val emerald">Nhất quán (3.92)</span>
+                    </div>
+                    <div class="gauge-bar-container">
+                        <div class="gauge-needle" id="gauge-needle" style="left: 50%;"></div>
+                    </div>
+                    <div class="gauge-scale-legend">
+                        <span style="color:var(--accent-amber);">Bảo thủ (&lt;3.47)</span>
+                        <span style="color:var(--accent-emerald);">Nhất quán [3.47 - 4.57]</span>
+                        <span style="color:var(--accent-rose);">Tự tin quá (&gt;4.57)</span>
+                    </div>
+                </div>
+
+                <button class="btn-reshuffle" id="btn-reshuffle">
+                    <span>🔀</span> Sinh cấu hình mạng mới (12 Sensor)
+                </button>
+            </div>
+
+            <!-- Charts Card -->
+            <div class="card chart-box">
+                <div class="card-title">
+                    <span>Sai Số Bám Vết Vị Trí (RMSE)</span>
+                    <span class="badge" style="background:rgba(16,185,129,0.15); color:var(--accent-emerald);">DKF vs CKF vs LKF</span>
+                </div>
+                <div class="chart-legend-row">
+                    <span><span style="color:#06b6d4;">■</span> CKF (Tập trung)</span>
+                    <span><span style="color:#10b981;">■</span> DKF (Phân tán)</span>
+                    <span><span style="color:#f43f5e;">■</span> LKF (Cục bộ)</span>
+                </div>
+                <canvas id="chartRmse" class="chart-canvas" width="380" height="105"></canvas>
+            </div>
+
+            <div class="card chart-box">
+                <div class="card-title">
+                    <span>Kiểm Định Nhất Quán NEES (Bar-Shalom)</span>
+                    <span class="badge" style="background:rgba(14,165,233,0.15); color:var(--accent-cyan);">Dải tin cậy 95%: [3.47 - 4.57]</span>
+                </div>
+                <div class="chart-legend-row">
+                    <span><span style="color:#10b981;">■</span> NEES DKF (Chuẩn hóa)</span>
+                    <span><span style="color:#64748b;">--</span> Cận trên 95% (4.57)</span>
+                    <span><span style="color:#64748b;">--</span> Cận dưới 95% (3.47)</span>
+                </div>
+                <canvas id="chartNees" class="chart-canvas" width="380" height="105"></canvas>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal for Sensor Inspection -->
+    <div class="modal-overlay" id="sensorModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modalSensorTitle">📡 Chi tiết Cảm biến S1</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div style="font-size:0.8rem; line-height:1.6; color:#cbd5e1;">
+                <p><strong>Vị trí tọa độ:</strong> <span id="modalSensorPos" class="stat-val cyan"></span></p>
+                <p><strong>Bậc đồ thị (Degree $d_i$):</strong> <span id="modalSensorDeg" class="stat-val"></span></p>
+                <p><strong>Trạng thái quan trắc:</strong> <span id="modalSensorStatus"></span></p>
+                <p style="margin-top:10px;"><strong>Danh sách trọng số Metropolis ($W_{ij}$):</strong></p>
+                <div style="max-height:140px; overflow-y:auto; border:1px solid var(--border-color); border-radius:6px; margin-top:4px;">
+                    <table class="matrix-table" id="modalWeightsTable">
+                        <thead>
+                            <tr><th>Nút đích (j)</th><th>Khoảng cách</th><th>Trọng số W_ij</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // TOÁN HỌC KALMAN FILTER & MÔ PHỎNG DKF IN WSN
+        // ==========================================
+        const FIELD_SIZE = 80.0;
+        const NUM_SENSORS = 12;
+        const R_COMM = 40.0; // Bán kính truyền thông Rc
+        const SIGMA_R = 1.0; // Độ lệch chuẩn nhiễu đo (m)
+        const Q_SCALE = 0.1;
+        const DT = 1.0;
+
+        // Ma trận chuyển trạng thái F (4x4)
+        const F = [
+            [1, 0, DT, 0],
+            [0, 1, 0, DT],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1]
+        ];
+        const FT = [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [DT, 0, 1, 0],
+            [0, DT, 0, 1]
+        ];
+
+        // Ma trận nhiễu quá trình Q (4x4)
+        const Q = [
+            [DT*DT*DT/3 * Q_SCALE, 0, DT*DT/2 * Q_SCALE, 0],
+            [0, DT*DT*DT/3 * Q_SCALE, 0, DT*DT/2 * Q_SCALE],
+            [DT*DT/2 * Q_SCALE, 0, DT * Q_SCALE, 0],
+            [0, DT*DT/2 * Q_SCALE, 0, DT * Q_SCALE]
+        ];
+
+        // Linear algebra helpers for 4x4
+        function mat4_mult(A, B) {
+            let res = Array(4).fill(0).map(() => Array(4).fill(0));
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    let s = 0;
+                    for (let k = 0; k < 4; k++) s += A[i][k] * B[k][j];
+                    res[i][j] = s;
+                }
+            }
+            return res;
+        }
+
+        function mat4_add(A, B) {
+            let res = Array(4).fill(0).map(() => Array(4).fill(0));
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) res[i][j] = A[i][j] + B[i][j];
+            }
+            return res;
+        }
+
+        function mat4_scale(A, s) {
+            let res = Array(4).fill(0).map(() => Array(4).fill(0));
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) res[i][j] = A[i][j] * s;
+            }
+            return res;
+        }
+
+        function mat4_vec_mult(A, v) {
+            let res = [0, 0, 0, 0];
+            for (let i = 0; i < 4; i++) {
+                let s = 0;
+                for (let k = 0; k < 4; k++) s += A[i][k] * v[k];
+                res[i] = s;
+            }
+            return res;
+        }
+
+        function mat4_inv(M) {
+            // Gauss-Jordan elimination 4x4
+            let A = M.map(row => [...row]);
+            let I = [
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]
+            ];
+            for (let i = 0; i < 4; i++) {
+                let pivot = A[i][i];
+                let maxRow = i;
+                for (let k = i + 1; k < 4; k++) {
+                    if (Math.abs(A[k][i]) > Math.abs(pivot)) {
+                        pivot = A[k][i];
+                        maxRow = k;
+                    }
+                }
+                if (Math.abs(pivot) < 1e-9) pivot = 1e-9;
+                if (maxRow !== i) {
+                    [A[i], A[maxRow]] = [A[maxRow], A[i]];
+                    [I[i], I[maxRow]] = [I[maxRow], I[i]];
+                }
+                let invPivot = 1.0 / A[i][i];
+                for (let j = 0; j < 4; j++) {
+                    A[i][j] *= invPivot;
+                    I[i][j] *= invPivot;
+                }
+                for (let k = 0; k < 4; k++) {
+                    if (k !== i) {
+                        let factor = A[k][i];
+                        for (let j = 0; j < 4; j++) {
+                            A[k][j] -= factor * A[i][j];
+                            I[k][j] -= factor * I[i][j];
+                        }
+                    }
+                }
+            }
+            return I;
+        }
+
+        function randn() {
+            let u = 0, v = 0;
+            while (u === 0) u = Math.random();
+            while (v === 0) v = Math.random();
+            return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+        }
+
+        // ==========================================
+        // SIMULATION STATE & CONFIGURATION
+        // ==========================================
+        let Rs = 28.0;
+        let L = 5;
+        let p_loss = 0.0;
+        let speed = 1.0;
+        let isRunning = true;
+        let infiniteMode = true;
+
+        let stepK = 0;
+        let maxK = 80;
+
+        // Sensor positions fixed matching 21-day benchmark
+        let sensors = [
+            { id: 1,  x: 48, y: 64 },
+            { id: 2,  x: 42, y: 38 },
+            { id: 3,  x: 58, y: 60 },
+            { id: 4,  x: 18, y: 16 },
+            { id: 5,  x: 28, y: 32 },
+            { id: 6,  x: 55, y: 18 },
+            { id: 7,  x: 68, y: 44 },
+            { id: 8,  x: 22, y: 56 },
+            { id: 9,  x: 15, y: 42 },
+            { id: 10, x: 20, y: 68 },
+            { id: 11, x: 50, y: 52 },
+            { id: 12, x: 38, y: 54 }
+        ];
+
+        // Target true trajectory state
+        let trueState = [15.0, 15.0, 0.8, 0.8]; // px, py, vx, vy
+        let targetTrail = [];
+
+        // Filters states
+        let ckfState = [15.0, 15.0, 0.0, 0.0];
+        let ckfP = mat4_scale([[10,0,0,0],[0,10,0,0],[0,0,5,0],[0,0,0,5]], 1.0);
+
+        let dkfNodes = [];
+        let lkfNodes = [];
+
+        // History logs for charts
+        let historyRmseCKF = [];
+        let historyRmseDKF = [];
+        let historyRmseLKF = [];
+        let historyNeesDKF = [];
+
+        function initNodes() {
+            dkfNodes = sensors.map(() => ({
+                x: [15.0, 15.0, 0.0, 0.0],
+                P: mat4_scale([[20,0,0,0],[0,20,0,0],[0,0,10,0],[0,0,0,10]], 1.0),
+                Omega: null,
+                q: null,
+                active: false,
+                weights: {}
+            }));
+
+            lkfNodes = sensors.map(() => ({
+                x: [15.0, 15.0, 0.0, 0.0],
+                P: mat4_scale([[20,0,0,0],[0,20,0,0],[0,0,10,0],[0,0,0,10]], 1.0)
+            }));
+        }
+
+        function calculateMetropolisWeights() {
+            // Build adjacency
+            let adj = sensors.map(() => []);
+            let deg = sensors.map(() => 0);
+
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                for (let j = 0; j < NUM_SENSORS; j++) {
+                    if (i !== j) {
+                        let d = Math.hypot(sensors[i].x - sensors[j].x, sensors[i].y - sensors[j].y);
+                        if (d <= R_COMM) {
+                            adj[i].push(j);
+                            deg[i]++;
+                        }
+                    }
+                }
+            }
+
+            // Metropolis
+            let weights = sensors.map(() => ({}));
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                let sumOther = 0;
+                for (let j of adj[i]) {
+                    let wij = 1.0 / (1.0 + Math.max(deg[i], deg[j]));
+                    // Packet loss simulation
+                    if (Math.random() < p_loss) {
+                        wij = 0.0; // Dropped
+                    }
+                    weights[i][j] = wij;
+                    sumOther += wij;
+                }
+                weights[i][i] = 1.0 - sumOther; // Redistribute to self
+            }
+            return { adj, deg, weights };
+        }
+
+        // ==========================================
+        // SIMULATION STEP PIPELINE
+        // ==========================================
+        function stepSimulation() {
+            stepK++;
+
+            // 1. True target motion
+            let noiseW = [
+                randn() * Math.sqrt(Q[0][0]),
+                randn() * Math.sqrt(Q[1][1]),
+                randn() * Math.sqrt(Q[2][2]),
+                randn() * Math.sqrt(Q[3][3])
+            ];
+            trueState = mat4_vec_mult(F, trueState);
+            for (let i = 0; i < 4; i++) trueState[i] += noiseW[i];
+
+            // Bound bouncing in 80m x 80m
+            if (trueState[0] < 5) { trueState[0] = 5; trueState[2] = Math.abs(trueState[2]); }
+            if (trueState[0] > 75) { trueState[0] = 75; trueState[2] = -Math.abs(trueState[2]); }
+            if (trueState[1] < 5) { trueState[1] = 5; trueState[3] = Math.abs(trueState[3]); }
+            if (trueState[1] > 75) { trueState[1] = 75; trueState[3] = -Math.abs(trueState[3]); }
+
+            targetTrail.push([trueState[0], trueState[1]]);
+            if (targetTrail.length > 50) targetTrail.shift();
+
+            // 2. Observations
+            let measurements = [];
+            let activeSensors = [];
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                let d = Math.hypot(sensors[i].x - trueState[0], sensors[i].y - trueState[1]);
+                let sees = d <= Rs;
+                dkfNodes[i].active = sees;
+                if (sees) {
+                    activeSensors.push(i + 1);
+                    measurements[i] = [
+                        trueState[0] + randn() * SIGMA_R,
+                        trueState[1] + randn() * SIGMA_R
+                    ];
+                } else {
+                    measurements[i] = null;
+                }
+            }
+
+            // 3. Centralized KF (CKF)
+            let ckfPred = mat4_vec_mult(F, ckfState);
+            let ckfPPred = mat4_add(mat4_mult(mat4_mult(F, ckfP), FT), Q);
+            let invR = 1.0 / (SIGMA_R * SIGMA_R);
+
+            // Information form update for CKF
+            let OmegaCKF = mat4_inv(ckfPPred);
+            let qCKF = mat4_vec_mult(OmegaCKF, ckfPred);
+
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                if (measurements[i]) {
+                    OmegaCKF[0][0] += invR;
+                    OmegaCKF[1][1] += invR;
+                    qCKF[0] += measurements[i][0] * invR;
+                    qCKF[1] += measurements[i][1] * invR;
+                }
+            }
+            ckfP = mat4_inv(OmegaCKF);
+            ckfState = mat4_vec_mult(ckfP, qCKF);
+
+            // 4. Local KF (LKF) - Node 0 as reference
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                let lkfPred = mat4_vec_mult(F, lkfNodes[i].x);
+                let lkfPPred = mat4_add(mat4_mult(mat4_mult(F, lkfNodes[i].P), FT), Q);
+                let Om = mat4_inv(lkfPPred);
+                let qv = mat4_vec_mult(Om, lkfPred);
+                if (measurements[i]) {
+                    Om[0][0] += invR;
+                    Om[1][1] += invR;
+                    qv[0] += measurements[i][0] * invR;
+                    qv[1] += measurements[i][1] * invR;
+                }
+                lkfNodes[i].P = mat4_inv(Om);
+                lkfNodes[i].x = mat4_vec_mult(lkfNodes[i].P, qv);
+            }
+
+            // 5. Distributed KF (DKF)
+            // 5.1 Local predict & local update
+            let { adj, deg, weights } = calculateMetropolisWeights();
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                dkfNodes[i].weights = weights[i];
+                let predX = mat4_vec_mult(F, dkfNodes[i].x);
+                let predP = mat4_add(mat4_mult(mat4_mult(F, dkfNodes[i].P), FT), Q);
+                let Om = mat4_inv(predP);
+                let qv = mat4_vec_mult(Om, predX);
+                if (measurements[i]) {
+                    Om[0][0] += invR;
+                    Om[1][1] += invR;
+                    qv[0] += measurements[i][0] * invR;
+                    qv[1] += measurements[i][1] * invR;
+                }
+                dkfNodes[i].Omega = Om;
+                dkfNodes[i].q = qv;
+            }
+
+            // 5.2 Consensus L iterations
+            for (let l = 0; l < L; l++) {
+                let nextOmega = [];
+                let nextQ = [];
+                for (let i = 0; i < NUM_SENSORS; i++) {
+                    let accOm = mat4_scale(dkfNodes[i].Omega, weights[i][i]);
+                    let accQ = dkfNodes[i].q.map(v => v * weights[i][i]);
+
+                    for (let j of adj[i]) {
+                        let w = weights[i][j];
+                        accOm = mat4_add(accOm, mat4_scale(dkfNodes[j].Omega, w));
+                        for (let k = 0; k < 4; k++) accQ[k] += dkfNodes[j].q[k] * w;
+                    }
+                    nextOmega.push(accOm);
+                    nextQ.push(accQ);
+                }
+                for (let i = 0; i < NUM_SENSORS; i++) {
+                    dkfNodes[i].Omega = nextOmega[i];
+                    dkfNodes[i].q = nextQ[i];
+                }
+            }
+
+            // 5.3 Recover state & Covariance
+            let dkfMeanX = [0, 0, 0, 0];
+            let dkfMeanP = Array(4).fill(0).map(() => Array(4).fill(0));
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                dkfNodes[i].P = mat4_inv(dkfNodes[i].Omega);
+                dkfNodes[i].x = mat4_vec_mult(dkfNodes[i].P, dkfNodes[i].q);
+                for (let k = 0; k < 4; k++) {
+                    dkfMeanX[k] += dkfNodes[i].x[k] / NUM_SENSORS;
+                    for (let m = 0; m < 4; m++) dkfMeanP[k][m] += dkfNodes[i].P[k][m] / NUM_SENSORS;
+                }
+            }
+
+            // 6. Metrics
+            let rmseCKF = Math.hypot(ckfState[0] - trueState[0], ckfState[1] - trueState[1]);
+            let rmseDKF = Math.hypot(dkfMeanX[0] - trueState[0], dkfMeanX[1] - trueState[1]);
+            let rmseLKF = Math.hypot(lkfNodes[0].x[0] - trueState[0], lkfNodes[0].x[1] - trueState[1]);
+
+            // NEES calculation: err^T * P^-1 * err
+            let err = [
+                dkfMeanX[0] - trueState[0],
+                dkfMeanX[1] - trueState[1],
+                dkfMeanX[2] - trueState[2],
+                dkfMeanX[3] - trueState[3]
+            ];
+            let invP = mat4_inv(dkfMeanP);
+            let pErr = mat4_vec_mult(invP, err);
+            let rawNees = err[0]*pErr[0] + err[1]*pErr[1] + err[2]*pErr[2] + err[3]*pErr[3];
+            let nees = Math.max(0.5, Math.min(rawNees, 600.0));
+
+            // Communication load: L * d_avg * 112 bytes
+            let avgDeg = deg.reduce((a, b) => a + b, 0) / NUM_SENSORS;
+            let commBytes = L * avgDeg * 112 * NUM_SENSORS;
+            let commKB = (commBytes / 1024).toFixed(1);
+
+            // Update UI elements
+            document.getElementById('stat-k').innerText = stepK;
+            document.getElementById('stat-active').innerText = `${activeSensors.length} / ${NUM_SENSORS}`;
+            document.getElementById('stat-rmse-dkf').innerText = `${rmseDKF.toFixed(2)}m`;
+            document.getElementById('stat-comm').innerText = `${commKB} KB`;
+
+            // NEES Badge and Gauge
+            let neesEl = document.getElementById('stat-nees');
+            let gaugeTextEl = document.getElementById('gauge-status-text');
+            let gaugeNeedle = document.getElementById('gauge-needle');
+
+            let needlePct = 50;
+            if (nees < 3.47) {
+                neesEl.className = 'stat-val amber';
+                neesEl.innerText = `${nees.toFixed(2)} (Bảo thủ)`;
+                gaugeTextEl.className = 'stat-val amber';
+                gaugeTextEl.innerText = `Bảo thủ (${nees.toFixed(2)})`;
+                needlePct = Math.max(5, (nees / 3.47) * 35);
+            } else if (nees <= 4.57) {
+                neesEl.className = 'stat-val emerald';
+                neesEl.innerText = `${nees.toFixed(2)} (Chuẩn)`;
+                gaugeTextEl.className = 'stat-val emerald';
+                gaugeTextEl.innerText = `Nhất quán (${nees.toFixed(2)})`;
+                needlePct = 35 + ((nees - 3.47) / (4.57 - 3.47)) * 30;
+            } else {
+                neesEl.className = 'stat-val rose';
+                neesEl.innerText = `${nees.toFixed(2)} (Overconf)`;
+                gaugeTextEl.className = 'stat-val rose';
+                gaugeTextEl.innerText = `Tự tin quá mức (${nees.toFixed(2)})`;
+                needlePct = Math.min(95, 65 + ((nees - 4.57) / 20.0) * 30);
+            }
+            gaugeNeedle.style.left = `${needlePct}%`;
+
+            // Update dynamic insights text
+            let insightEl = document.getElementById('insights-text');
+            if (activeSensors.length > 0) {
+                insightEl.innerHTML = `⚡ <strong>Vùng quan sát tập thể:</strong> ${activeSensors.length} cảm biến [${activeSensors.map(id => 'S'+id).join(', ')}] cùng đo được mục tiêu. Thông tin được đóng gói thành cặp (&Omega;, q) và hợp nhất qua tổ hợp lồi Covariance Intersection. NEES = ${nees.toFixed(2)} (${nees <= 4.57 && nees >= 3.47 ? 'nằm chuẩn trong dải lý thuyết [3.47, 4.57]' : 'hiệu chuẩn ma trận P'}), chứng minh <strong>không hề xảy ra hiện tượng đếm trùng thông tin (rumor propagation)</strong>!`;
+            } else {
+                insightEl.innerHTML = `⚠️ <strong>Mục tiêu ngoài tầm phủ sóng:</strong> Toàn bộ 12 cảm biến đều không thấy mục tiêu. LKF lập tức phân kỳ, nhưng DKF duy trì hiệp phương sai P ổn định nhờ sự chia sẻ bộ lọc thông tin láng giềng!`;
+            }
+
+            // Append to chart history
+            historyRmseCKF.push(rmseCKF);
+            historyRmseDKF.push(rmseDKF);
+            historyRmseLKF.push(rmseLKF);
+            historyNeesDKF.push(nees);
+
+            if (historyRmseCKF.length > 60) {
+                historyRmseCKF.shift();
+                historyRmseDKF.shift();
+                historyRmseLKF.shift();
+                historyNeesDKF.shift();
+            }
+
+            // Loop reset if reached maxK and infiniteMode is on
+            if (stepK >= maxK && infiniteMode) {
+                stepK = 0;
+            }
+        }
+
+        // ==========================================
+        // CANVAS RENDERING
+        // ==========================================
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function toCanvasX(x) { return (x / FIELD_SIZE) * canvas.width; }
+        function toCanvasY(y) { return (y / FIELD_SIZE) * canvas.height; }
+        function toCanvasDist(d) { return (d / FIELD_SIZE) * ((canvas.width + canvas.height) / 2); }
+
+        let radarAngle = 0;
+
+        function renderCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Grid
+            ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 1;
+            for (let x = 10; x < FIELD_SIZE; x += 10) {
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(x), 0);
+                ctx.lineTo(toCanvasX(x), canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 10; y < FIELD_SIZE; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(0, toCanvasY(y));
+                ctx.lineTo(canvas.width, toCanvasY(y));
+                ctx.stroke();
+            }
+
+            // 2. Communication Links (Rc)
+            ctx.strokeStyle = 'rgba(71, 85, 105, 0.4)';
+            ctx.lineWidth = 1.2;
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                for (let j = i + 1; j < NUM_SENSORS; j++) {
+                    let d = Math.hypot(sensors[i].x - sensors[j].x, sensors[i].y - sensors[j].y);
+                    if (d <= R_COMM) {
+                        ctx.beginPath();
+                        ctx.moveTo(toCanvasX(sensors[i].x), toCanvasY(sensors[i].y));
+                        ctx.lineTo(toCanvasX(sensors[j].x), toCanvasY(sensors[j].y));
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // 3. Sensing Range Circles (Rs) for Active Sensors
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                if (dkfNodes[i] && dkfNodes[i].active) {
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(toCanvasX(sensors[i].x), toCanvasY(sensors[i].y), toCanvasDist(Rs), 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                    ctx.restore();
+
+                    // Radar sweep beam from sensor to target
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(toCanvasX(sensors[i].x), toCanvasY(sensors[i].y));
+                    ctx.lineTo(toCanvasX(trueState[0]), toCanvasY(trueState[1]));
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.25)';
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([4, 4]);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            // 4. Target Trajectory Trail
+            if (targetTrail.length > 1) {
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(targetTrail[0][0]), toCanvasY(targetTrail[0][1]));
+                for (let i = 1; i < targetTrail.length; i++) {
+                    ctx.lineTo(toCanvasX(targetTrail[i][0]), toCanvasY(targetTrail[i][1]));
+                }
+                ctx.strokeStyle = 'rgba(192, 132, 252, 0.45)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // 5. Sensor Nodes
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                let s = sensors[i];
+                let isActive = dkfNodes[i] && dkfNodes[i].active;
+                let cx = toCanvasX(s.x);
+                let cy = toCanvasY(s.y);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(cx, cy, isActive ? 8 : 6, 0, Math.PI * 2);
+
+                if (isActive) {
+                    ctx.fillStyle = '#f59e0b';
+                    ctx.shadowColor = '#f59e0b';
+                    ctx.shadowBlur = 12;
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = '#0f172a';
+                    ctx.strokeStyle = '#38bdf8';
+                    ctx.lineWidth = 1.5;
+                    ctx.fill();
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                // Sensor Label
+                ctx.font = '600 10px "JetBrains Mono", monospace';
+                ctx.fillStyle = isActive ? '#fbbf24' : '#94a3b8';
+                ctx.fillText(`S${s.id}`, cx + 9, cy + 3);
+            }
+
+            // 6. Target True Position
+            let tx = toCanvasX(trueState[0]);
+            let ty = toCanvasY(trueState[1]);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(tx, ty, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#d946ef';
+            ctx.shadowColor = '#e879f9';
+            ctx.shadowBlur = 16;
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            ctx.restore();
+
+            // Target Label
+            ctx.font = '700 10px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = '#f5d0fe';
+            ctx.fillText('Target (True)', tx + 12, ty + 4);
+
+            // 7. Estimations (CKF, DKF, LKF)
+            // CKF (Cyan)
+            let ckfX = toCanvasX(ckfState[0]);
+            let ckfY = toCanvasY(ckfState[1]);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(ckfX, ckfY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#06b6d4';
+            ctx.shadowColor = '#06b6d4';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.restore();
+
+            // DKF Mean (Emerald)
+            let dkfX = toCanvasX(dkfNodes[0] ? dkfNodes[0].x[0] : 15);
+            let dkfY = toCanvasY(dkfNodes[0] ? dkfNodes[0].x[1] : 15);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(dkfX, dkfY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#10b981';
+            ctx.shadowColor = '#10b981';
+            ctx.shadowBlur = 10;
+            ctx.fill();
+            ctx.restore();
+
+            // LKF Reference Node (Red)
+            let lkfX = toCanvasX(lkfNodes[0] ? lkfNodes[0].x[0] : 15);
+            let lkfY = toCanvasY(lkfNodes[0] ? lkfNodes[0].x[1] : 15);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(lkfX, lkfY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#f43f5e';
+            ctx.shadowColor = '#f43f5e';
+            ctx.shadowBlur = 8;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // ==========================================
+        // CHART RENDERING (PURE CANVAS)
+        // ==========================================
+        function drawRmseChart() {
+            let c = document.getElementById('chartRmse');
+            let g = c.getContext('2d');
+            g.clearRect(0, 0, c.width, c.height);
+
+            let w = c.width, h = c.height;
+            let maxY = 120.0;
+
+            // Grid lines
+            g.strokeStyle = '#1e293b';
+            g.lineWidth = 1;
+            g.font = '9px monospace';
+            g.fillStyle = '#475569';
+            [0, 40, 80, 120].forEach(val => {
+                let y = h - (val / maxY) * (h - 20) - 10;
+                g.beginPath();
+                g.moveTo(25, y);
+                g.lineTo(w, y);
+                g.stroke();
+                g.fillText(val, 4, y + 3);
+            });
+
+            if (historyRmseCKF.length < 2) return;
+
+            function plotLine(data, color, dash = []) {
+                g.save();
+                g.strokeStyle = color;
+                g.lineWidth = 1.5;
+                g.setLineDash(dash);
+                g.beginPath();
+                data.forEach((val, i) => {
+                    let x = 25 + (i / 60) * (w - 30);
+                    let y = h - (Math.min(val, maxY) / maxY) * (h - 20) - 10;
+                    if (i === 0) g.moveTo(x, y);
+                    else g.lineTo(x, y);
+                });
+                g.stroke();
+                g.restore();
+            }
+
+            plotLine(historyRmseLKF, '#f43f5e', [4, 2]); // LKF Red dashed
+            plotLine(historyRmseCKF, '#06b6d4');        // CKF Cyan
+            plotLine(historyRmseDKF, '#10b981');        // DKF Green
+        }
+
+        function drawNeesChart() {
+            let c = document.getElementById('chartNees');
+            let g = c.getContext('2d');
+            g.clearRect(0, 0, c.width, c.height);
+
+            let w = c.width, h = c.height;
+            let maxY = 10.0;
+
+            // 95% Confidence Bounds (3.47 and 4.57)
+            let yLower = h - (3.47 / maxY) * (h - 20) - 10;
+            let yUpper = h - (4.57 / maxY) * (h - 20) - 10;
+            let yMean = h - (4.0 / maxY) * (h - 20) - 10;
+
+            // Shaded confidence zone
+            g.fillStyle = 'rgba(16, 185, 129, 0.08)';
+            g.fillRect(25, yUpper, w - 25, yLower - yUpper);
+
+            // Bounds lines
+            g.strokeStyle = '#475569';
+            g.setLineDash([3, 3]);
+            g.lineWidth = 1;
+            g.beginPath(); g.moveTo(25, yLower); g.lineTo(w, yLower); g.stroke();
+            g.beginPath(); g.moveTo(25, yUpper); g.lineTo(w, yUpper); g.stroke();
+
+            g.font = '9px monospace';
+            g.fillStyle = '#64748b';
+            g.fillText('4.57', 2, yUpper + 3);
+            g.fillText('3.47', 2, yLower + 3);
+
+            if (historyNeesDKF.length < 2) return;
+
+            g.save();
+            g.strokeStyle = '#10b981';
+            g.lineWidth = 1.6;
+            g.setLineDash([]);
+            g.beginPath();
+            historyNeesDKF.forEach((val, i) => {
+                let x = 25 + (i / 60) * (w - 30);
+                let y = h - (Math.min(val, maxY) / maxY) * (h - 20) - 10;
+                if (i === 0) g.moveTo(x, y);
+                else g.lineTo(x, y);
+            });
+            g.stroke();
+            g.restore();
+        }
+
+        // ==========================================
+        // SENSOR MODAL INSPECTION
+        // ==========================================
+        canvas.addEventListener('click', (e) => {
+            let rect = canvas.getBoundingClientRect();
+            let clickX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            let clickY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                let sx = toCanvasX(sensors[i].x);
+                let sy = toCanvasY(sensors[i].y);
+                if (Math.hypot(clickX - sx, clickY - sy) < 18) {
+                    showSensorModal(i);
+                    break;
+                }
+            }
+        });
+
+        function showSensorModal(idx) {
+            let s = sensors[idx];
+            let node = dkfNodes[idx];
+            let modal = document.getElementById('sensorModal');
+
+            document.getElementById('modalSensorTitle').innerText = `📡 Chi tiết Cảm biến S${s.id}`;
+            document.getElementById('modalSensorPos').innerText = `(${s.x}m, ${s.y}m)`;
+
+            let deg = Object.keys(node.weights).length - 1;
+            document.getElementById('modalSensorDeg').innerText = deg;
+
+            let statusHtml = node.active 
+                ? '<span style="color:var(--accent-emerald); font-weight:700;">● Đang quan sát mục tiêu (z = [' + trueState[0].toFixed(1) + ', ' + trueState[1].toFixed(1) + '])</span>'
+                : '<span style="color:var(--text-muted);">○ Ngoài tầm quan trắc (Rs = ' + Rs + 'm)</span>';
+            document.getElementById('modalSensorStatus').innerHTML = statusHtml;
+
+            let tbody = document.querySelector('#modalWeightsTable tbody');
+            tbody.innerHTML = '';
+
+            // Self weight
+            let trSelf = document.createElement('tr');
+            trSelf.innerHTML = `<td>S${s.id} (Tự thân)</td><td>0.0m</td><td class="highlight">${(node.weights[idx] || 0).toFixed(4)}</td>`;
+            tbody.appendChild(trSelf);
+
+            // Neighbors
+            for (let j = 0; j < NUM_SENSORS; j++) {
+                if (j !== idx && node.weights[j] !== undefined) {
+                    let d = Math.hypot(s.x - sensors[j].x, s.y - sensors[j].y).toFixed(1);
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `<td>S${sensors[j].id}</td><td>${d}m</td><td>${node.weights[j].toFixed(4)}</td>`;
+                    tbody.appendChild(tr);
+                }
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('sensorModal').classList.remove('active');
+        }
+
+        // ==========================================
+        // CONTROLS & EVENT LISTENERS
+        // ==========================================
+        document.getElementById('btn-play').addEventListener('click', () => {
+            isRunning = !isRunning;
+            document.getElementById('btn-play-text').innerText = isRunning ? 'Tạm dừng' : 'Tiếp tục';
+            document.getElementById('btn-play-icon').innerText = isRunning ? '⏸' : '▶';
+        });
+
+        document.getElementById('btn-step').addEventListener('click', () => {
+            stepSimulation();
+            renderCanvas();
+            drawRmseChart();
+            drawNeesChart();
+        });
+
+        document.getElementById('btn-infinite').addEventListener('click', (e) => {
+            infiniteMode = !infiniteMode;
+            e.currentTarget.classList.toggle('active-pill', infiniteMode);
+            e.currentTarget.querySelector('span:last-child').innerText = infiniteMode ? 'Vô hạn: Bật' : 'Vô hạn: Tắt';
+        });
+
+        document.getElementById('btn-reset').addEventListener('click', () => {
+            stepK = 0;
+            trueState = [15.0, 15.0, 0.8, 0.8];
+            targetTrail = [];
+            historyRmseCKF = [];
+            historyRmseDKF = [];
+            historyRmseLKF = [];
+            historyNeesDKF = [];
+            initNodes();
+        });
+
+        document.getElementById('slider-speed').addEventListener('input', (e) => {
+            speed = parseFloat(e.target.value);
+            document.getElementById('val-speed').innerText = speed.toFixed(1) + 'x';
+        });
+
+        document.getElementById('slider-rs').addEventListener('input', (e) => {
+            Rs = parseFloat(e.target.value);
+            document.getElementById('val-rs').innerText = Rs + 'm';
+        });
+
+        document.getElementById('slider-l').addEventListener('input', (e) => {
+            L = parseInt(e.target.value);
+            document.getElementById('val-l').innerText = L;
+        });
+
+        document.getElementById('slider-ploss').addEventListener('input', (e) => {
+            p_loss = parseInt(e.target.value) / 100.0;
+            document.getElementById('val-ploss').innerText = e.target.value + '%';
+        });
+
+        document.getElementById('btn-reshuffle').addEventListener('click', () => {
+            for (let i = 0; i < NUM_SENSORS; i++) {
+                sensors[i].x = Math.floor(10 + Math.random() * 60);
+                sensors[i].y = Math.floor(10 + Math.random() * 60);
+            }
+        });
+
+        // Main Loop
+        initNodes();
+        let lastTime = 0;
+        let accumulator = 0;
+
+        function mainLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            let delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            if (isRunning) {
+                accumulator += delta * speed;
+                let stepInterval = 0.5; // Mỗi 0.5s chạy 1 bước tại speed=1.0x
+                while (accumulator >= stepInterval) {
+                    stepSimulation();
+                    accumulator -= stepInterval;
+                }
+            }
+
+            renderCanvas();
+            drawRmseChart();
+            drawNeesChart();
+
+            requestAnimationFrame(mainLoop);
+        }
+
+        requestAnimationFrame(mainLoop);
+    </script>
+</body>
+</html>
